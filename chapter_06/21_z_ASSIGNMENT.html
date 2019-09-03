@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: SVG bar chart with value labels (centered)</title>
+		<script type="text/javascript" src="../d3.js"></script>
+		<style type="text/css">
+			/* No style rules here yet */		
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+            //ASSIGNMENT: 
+            //1. change the bar chart orientation so that it is horizontal instead of vertical, keeping the placement of the number labels at the end of each bar
+            //2. change the bar chart colors so that instead of shades of blue, the colors are shades of red or green. (r,g,b)
+            
+            
+			//Width and height
+			var w = 500;
+			var h = 500;//NOTE: I have changed the height of the svg already so that the chart will not be clipped
+			var barPadding = 1;
+			
+			var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+							11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+			
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+
+			svg.selectAll("rect")
+			   .data(dataset)
+			   .enter()
+			   .append("rect")
+                //HINT: start by switching the x and y values with eachother, and the width and height values with eachother. 
+                        //then adjust the x values such that each rectangle aligns on the left.
+			   .attr("y", function(d, i) {
+			   		return i * (w / dataset.length);
+			   })
+			   .attr("x", function(d) {
+			   		return h - (d * 4);
+			   })
+			   .attr("height", w / dataset.length - barPadding)
+			   .attr("width", function(d) {
+			   		return d * 4;
+			   })
+			   .attr("fill", function(d) {
+					return "rgb(0, 0, " + Math.round(d * 10) + ")";
+			   });
+
+
+             // NOTE: you will need to repeat the same steps for the text labels
+			svg.selectAll("text")
+			   .data(dataset)
+			   .enter()
+			   .append("text")
+			   .text(function(d) {
+			   		return d;
+			   })
+			   .attr("text-anchor", "middle")
+			   .attr("x", function(d, i) {
+			   		return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
+			   })
+			   .attr("y", function(d) {
+			   		return h - (d * 4) + 14;
+			   })
+			   .attr("font-family", "sans-serif")
+			   .attr("font-size", "11px")
+			   .attr("fill", "white");
+
+
+			
+		</script>
+	</body>
+</html>
