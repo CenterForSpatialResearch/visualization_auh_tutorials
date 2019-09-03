@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: Setting paragraphs' style conditionally, based on data</title>
+        <script type="text/javascript" src="../d3.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+		
+            //here I have given you a different dataset, its an array of the numbers 1 to 100
+            var dataset = [];
+            for (var i = 1; i <= 100; i++) {
+               dataset.push(i);
+            }
+            //you can uncomment the line below to see this data printed out to your javascript console
+            //console.log(dataset)
+            
+			
+            //YOUR ASSIGNMENT: now you will make a function to change the color of the text
+            //if a number is divisible by 3, it is blue, 
+            //if it is divisible by 5 it is red, 
+            //if it is divisible by both, then it is green. 
+            //and if the number is not divisible by either, it will be black
+            
+            
+            //all this will stay the same
+			d3.select("body").selectAll("p")
+				.data(dataset)
+				.enter()
+				.append("p")
+				.text(function(d) {
+					return d;
+				})
+				.style("color", function(d) {
+                    return red
+                    //YOUR CODE WILL BE HERE
+                    //
+                    
+                    //HINT: think about the order of the if else statements, they are not in the order I have listed above.
+                    //you will need a statement for each of the 4 conditions which I have written below
+                    //Step 1: uncomment by erasing the /* and */ bracketing this code block
+                    //Step 2: replace each of the words in () with your conditions
+                    //step 3: return the approperiate color in the {} following each condition
+                    //step 4: refresh your page and check if the results are what you expected
+                    
+                    /*
+                        if(your first condition here){
+                            //if the first is true, then this happens and nothing below this will happen
+                        }else if(your 2nd condition){
+                            //if the second condition is true, then this happens and nothing below this will happen
+                        }else if(your 3rd condition){
+                            //if the third condition is true, then this happens and nothing below this will happen
+                        }else{
+                            //if non of the above conditions are true, then this happens
+                        }
+                    */
+                    
+                                        
+				});
+			
+		</script>
+	</body>
+</html>
