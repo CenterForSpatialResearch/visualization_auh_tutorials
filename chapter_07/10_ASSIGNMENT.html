@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: Time scale</title>
+		<script type="text/javascript" src="../d3.js"></script>
+		<style type="text/css">
+			/* No style rules here yet */		
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+            
+            //ASSIGNMENT: A new dataset was loaded here in this scatterplot called dataset_for_assignment
+            //this dataset contains all 4955 complaints made to 311 on labor day 9/2/2019
+            //this dataset has been formated by hour and count below in the function countHourOccurances
+            //Scales have already been created for you for x and y values
+            
+            //5 STEPS:
+            //Draw a scatterplot of this new data with the approperiate scale using the starter code below
+            //label each circle in the plot with the count for that hour
+            //Create a third scale for the radius of the scatterplot
+            //Scale each radius with what you created
+            //adjust the position of the labels.
+            
+            
+            //you will find that each small task is labeled with the words TODO:
+
+			var w = 800;
+			var h = 500;
+			var padding = 40;
+			
+			var dataset, xScale, yScale, rScale; 
+
+			var formatTime = d3.timeFormat("%H");
+
+			var rowConverter = function(d) {
+                var date = new Date(d["Created Date"])
+				return {
+					Hour: date.getHours(),
+				};
+			}
+            
+            //this is a basic function using loops to count and format the occurances for each hour of the day
+            function countHourOccurances(data){
+                var count ={}
+                for(var i in data){
+                    var hour = data[i].Hour
+                    if(hour in Object.keys(count)){
+                        count[hour]+=1
+                    }else{
+                        count[hour]=1
+                    }
+                }
+                var formatted = []
+                for(var c in count){
+                    if(c!="undefined"){
+                        formatted.push({Hour:parseInt(c),Count:count[c]})
+                    }
+                }
+                return formatted
+            }
+            
+            
+            
+
+			d3.csv("dataset_for_assignment.csv",rowConverter)
+                .then(function(data) {
+                
+                dataset = countHourOccurances(data);//here I have set the dataset variable to the formatted version of our data
+                
+                //We will be using a linear scale instead of time scale here because the time has been to a hour number.
+				xScale = d3.scaleLinear()
+							   .domain([
+									d3.min(dataset, function(d) { return d.Hour; }),
+									d3.max(dataset, function(d) { return d.Hour; })
+								])
+							   .range([padding, w - padding]);
+
+				yScale = d3.scaleLinear()
+							   .domain([
+									d3.min(dataset, function(d) { return d.Count; }),
+									d3.max(dataset, function(d) { return d.Count; })
+								])
+							   .range([h - padding, padding]);
+		          
+                  //TODO:add a third linear scale here for the radius of the circles called rScale. 
+                // the domain would be the minimum and maxium values for the count same as the yScale
+               //the range would be of your choosing, experiment till it looks ok
+        
+				var svg = d3.select("body")
+							.append("svg")
+							.attr("width", w)
+							.attr("height", h);
+
+ 				svg.selectAll("text")
+ 				   .data(dataset)
+ 				   .enter()
+ 				   .append("text")
+ 				   .text(function(d) {
+                       //TODO: return the approperiate label value
+ 				   })
+ 				   .attr("x", function(d) {
+                       //TODO: return the approperiate x value
+ 				   })
+ 				   .attr("y", function(d) {
+                       //TODO: return the approperiate y value
+ 				   })
+ 				   .attr("font-family", "sans-serif")
+ 				   .attr("font-size", "11px")
+ 				   .attr("fill", "#bbb");
+
+				svg.selectAll("circle")
+				   .data(dataset)
+				   .enter()
+				   .append("circle")
+				   .attr("cx", function(d) {
+                       //TODO: return the approperiate x value
+				   })
+				   .attr("cy", function(d) {
+                       //TODO: return the approperiate y value
+				   })
+				   .attr("r", function(d){
+                       //TODO: use the rScale to create circles whose size correspond to the count
+				   });
+                   
+                   //TODO: you may see that now the new radius overlaps the labels and are hard to see. adjust it in 1 of 2 ways
+                   //either change the order and draw the circles before you draw the labels so that labels lie on top
+                   //or offset the x and y values of the labels so that all labels are clearly visible 
+                   //HINT: try adding the scaled radius value to the label's x and y positions to offset them by the size of each circle (lines 104 and 107)
+
+			});
+			
+		</script>
+	</body>
+</html>
