@@ -134,7 +134,7 @@
     				.style("fill", function(d, i) {
     					return colors[i];//you can assign each food a specific color with an object that is {food1:color1,food2:color2...}
     				})
-                    .attr("class",function(d){console.log(d.key); return d.key})
+                    .attr("class",function(d){return d.key})
                     .on("mouseover",function(d){
                         console.log("food: "+d.key)
                     })
