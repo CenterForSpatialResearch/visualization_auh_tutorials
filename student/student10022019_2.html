@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: Pie layout pie chart</title>
+		<script type="text/javascript" src="../d3.js"></script>
+		<style type="text/css">
+
+			text {
+				font-family: sans-serif;
+				font-size: 12px;
+				fill: white;
+			}
+
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+
+			//Width and height
+			var w = 800;
+			var h = 800;
+            var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+            
+            
+            //fake data in format, each clothing color has a random value between 0 and 50.
+            //each row is a day
+            //TODO: put your data into this format so that it can be stackeds
+			var dataset = [
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  },
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  },
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  },
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  },
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  },
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  },
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  },
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  },
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  },
+				{ blues: Math.random()*50, greens: Math.random()*50, oranges: Math.random()*50,  reds: Math.random()*50  }
+			];
+            
+            //stacking each row - each day
+            var stack = d3.stack().keys(["blues","greens","oranges","reds"])
+            var stackedData = stack(dataset)
+            //you will find above section in textb ook in page 265 under stacked bar charts, not pie
+            
+            
+            //we need to figure out what color to draw each of the clothing colors, I put some placeholders here
+            //TODO: put in real colors that correspond with your data 
+            var colorDictionary = {
+                blues:"#638ccc",
+                greens:"#60a862",
+                oranges:"#c57c3c",
+                reds:"#cb5a4c"
+            }
+            
+            //let's iterate through all our data, each stacked[i] is a color group
+            for(var i in stackedData){
+                
+                //we get a hex color based on the clothing color
+                var clothingColor = stackedData[i].key
+                var color = colorDictionary[clothingColor]
+                
+                
+                
+                //so this is 1 clothing color for all days below
+                var clothingData = stackedData[i]
+                
+                //within each clothing color let's separate the days out
+                for(var day in clothingData){
+                    var dailyclothingData = clothingData[day]
+                    //to make an arc, we need 4 things, start angle, end angle, inner radius, outter radius
+                    //we have the inner and out radius from our stacked data, they are:
+                    var inner = dailyclothingData[0]//TODO: you will need to implement a scale here so that the colors fit within the svg
+                    var outer = dailyclothingData[1]//TODO: also apply scale to this
+                    //we can get our angles pretty easily
+                    //the angle widths are always the same because it is a day
+                    //day is day, each circle is 2*Math.PI, so....
+                    //let's say we have 10 days
+                    var slice = parseInt(day)
+                    var start= (2/10)*slice*Math.PI
+                    var end= 2/10*(slice+1)*Math.PI
+                    
+                    //let's put this in the right format by making an object with our calculated values in thme
+                    //this data object below is 1 arch representing 1 fruit for 1 day.
+                    
+                    if(isNaN(inner)==false){
+                        var data = {
+                          startAngle: start,
+                          endAngle: end,
+                          innerRadius: inner,
+                            outerRadius: outer
+                        }
+                        
+                        //once we have the data all formatted, we draw the arc with the function below called drawArc, we pass in our 2 variables, data and the color of the arc.
+                        drawArc(data,color)
+                    }
+                    
+                    
+                }
+                
+            }
+                
+
+            //this function draws the arc
+            function drawArc(data,color){
+                var arcGenerator = d3.arc();//this is calling the built in d3 function arc
+			    var pathData = arcGenerator(data);//we apply it to our data to get the right dimensions
+                        
+                        
+                        //below is the basics for drawing a path, just append, and set d to the data of the path
+                  svg.append('path')
+                    .attr('d', pathData)
+                    .attr("transform","translate("+w/2+","+h/2+")")//here we are moving everything over to the center
+                    .attr("stroke","white")//here I set the stroke color to white so I can see slices better
+                    .attr("stroke-width",2)
+                    .attr("fill",color)//here we color the actual arc with the color that we passed into the function
+            }
+
+            
+            
+            	
+		</script>
+	</body>
+</html>
