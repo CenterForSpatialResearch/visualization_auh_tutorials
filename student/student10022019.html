@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Stacked Bar Chart</title>
+        <script type="text/javascript" src="../d3.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+
+
+          d3.csv("data_meal.csv")
+            .then(function(data) {
+                //format data with function
+                var formattedData = formatData(data)
+                
+                //use formatted data in chart
+                drawChart(formattedData)
+            })
+            
+            function formatData(data){
+                //make empty dictionary with days
+                var formatted = {}           
+                for(var i in data){                             
+                    if(Object.keys(formatted).indexOf(data[i].Date)==-1){
+                        formatted[data[i].Date]={}
+                    }
+                }
+                
+                //this below will log a empty object with days as keys
+                //console.log(formatted)
+                
+                //fill in data
+                for(var k in data){
+                        var date = data[k].Date
+                        var food = data[k].Food
+                        var quant = parseFloat(data[k].Quantity)//make into number
+                    formatted[date][food]=quant
+                }
+                
+                //this below will log your foods by each day
+               // console.log(formatted)
+                
+                
+                // get all possible foods
+                var allFoods = []
+                for(var j in data){
+                     //below if the index of a food in the all foods array is -1, then it means it is not in the array
+                    if(allFoods.indexOf(data[j].Food)==-1){
+                        allFoods.push(data[j].Food)
+                    }
+                }   
+                //this below will log all possible foods with no duplicates
+                //console.log(allFoods)
+                
+                //fill in foods for days even if it not eaten and set that food to 0 for the day
+                
+                for(var l in formatted){
+                    var existingFoods = Object.keys(formatted[l])
+                    for(var f in allFoods){
+                        var food = allFoods[f]
+                        if(existingFoods.indexOf(food)==-1){
+                            formatted[l][food]=0
+                        }
+                    }
+                }
+                //this below will log out the same as line 41 but when you don't eat a food for that day, it is still there just set to 0
+                //console.log(formatted)
+                
+                //turn into array
+                var formattedArray = []
+                for(var i in formatted){
+                    formatted[i]["date"]=i
+                    formattedArray.push(formatted[i])
+                }
+                
+                return formattedArray//return this last dataset with everything filled in and in the array format that stacked takes
+              }
+                
+
+            
+            
+            function drawChart(data){
+                
+                //now we use the stack layout by first defining the keys. the keys are all foods now because they are filled in
+            //I just copied the log statement from above when we got the foods, but you should make each loop into a reusable function
+               var allFoods = ["rice", "tomato", "egg", "pork", "potato", "beef", "cabbage", "grape", "cole", "bread", "onion", "peach", "cucumber", "cookie", "turkey", "broccoli", "carrot", "fish", "milk", "banana", "sweetpotato"]
+                
+                console.log(allFoods.length)
+                
+                //this part of the code will start on page 265 of your textbook - figure 13-4
+                var stack = d3.stack()
+                    .keys(allFoods)
+                    //.order(d3.stackOrderAscending)
+                
+                //now we use the stack we defined and apply it to our data
+                var stackedData = stack(data)
+                //console.log(series)
+                                
+                //make a svg first
+                var w = 600
+                var h = 800
+                var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+                
+                //I got some random greens from https://medialab.github.io/iwanthue/
+                var colors = ["#d7ed46","#5f5848","#74e13e","#676f52","#60d967","#6b6628","#dbcc3b","#47763e","#d8df85","#65781f","#d8ddb1","#90c53e","#abb096","#55932e","#a69544","#4eae5c","#a5ab3f","#a2e592","#899663","#8db87d","#97bf7c","#759133"]
+                
+			//Set up scales
+			var xScale = d3.scaleBand()
+				.domain(d3.range(data.length))
+				.range([0, w])
+				.paddingInner(0.05);
+		
+			var yScale = d3.scaleLinear()
+				.domain([0,	20			
+                    //TODO: the code that is better gets the max amount of all foods for that stack/day
+                    //I set it to 30 for now, but you need to change these so that it reflects your data's max
+                    
+                    //below is from the book - it will be similar for your data
+					//d3.max(data, function(d) {
+					//	return d.apples + d.oranges + d.grapes;
+					//})
+				])
+				.range([0, h]);
+                
+                
+                //now ready for drawing - following page 267
+                
+                //maps colors using code from book
+    			var groups = svg.selectAll("g")
+    				.data(stackedData)
+    				.enter()
+    				.append("g")
+    				.style("fill", function(d, i) {
+    					return colors[i];//you can assign each food a specific color with an object that is {food1:color1,food2:color2...}
+    				})
+                    .attr("class",function(d){console.log(d.key); return d.key})
+                    .on("mouseover",function(d){
+                        console.log("food: "+d.key)
+                    })
+                    
+                    
+    			// Add a rect for each data value
+    			var rects = groups.selectAll("rect")
+    				.data(function(d) { return d; })
+    				.enter()
+    				.append("rect")                    
+    				.attr("x", function(d, i) {
+    					return xScale(i);
+    				})
+    				.attr("y", function(d) {
+    					return yScale(d[0]);
+    				})
+    				.attr("height", function(d,i) {
+    					return yScale(d[1]) - yScale(d[0]);
+    				})
+    				.attr("width", xScale.bandwidth())    
+                    .on("mouseover",function(d,i){
+                        
+                        //TODO it would be good here to get the tooltip so when you rollover the square there is the amount
+                        //here is the data you need, in earlier chapters of the book we covered tooltips
+                        var amount = d[1]-d[0]
+                        console.log("amount:"+amount)//you can see that the code messed up your numbers a bit
+                        //.8 is now .7999999 - just round it back using Math.round
+                        console.log("date: "+d.data.date)
+                    })
+            
+                   // TODO: these bars are upside down
+            
+            
+            }
+
+		</script>
+	</body>
+</html>
