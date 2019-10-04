@@ -15,7 +15,9 @@
 			var padding = 40;
 			
 			var dataset, xScale, yScale, rScale; 
-
+            
+            
+         
             var svg = d3.select("body")
             .append("svg")
             .attr("width",w)
@@ -30,14 +32,15 @@
 				   .enter()
 				   .append("circle")
 				   .attr("cx", function(d) {
-				   		return d.x
+                       //console.log(d)
+				   		return d.a
 				   })
 				   .attr("cy", function(d) {
-                       return d.y
+                       return d.b
 				   })
 				   .attr("r", function(d){
-                       return 5
-				   });
+                       return 2
+				   })
                    
                    /*
                    TODO: in class
@@ -48,6 +51,9 @@
                   5. make a button
                   6. on click of button transform each one
                   7. use duration and delay
+                   8. make bar
+                   9. sorting
+                   10.transition bar
                    */
                    
 
