@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Nadine</title>
+    <script src="Vibrant.min.js"></script>
+    <script src="../../d3.js"></script>
+    
+<body>
+
+
+
+
+<script>
+    
+    //find library here:https://github.com/jariz/vibrant.js/
+    
+    
+    //below I put some of the images from the code library and some from google as tests
+    //you will figure out a storage/naming system so that you don't have to list by name
+    var myImages = ["images/1.jpg","images/2.jpg","images/3.jpg","images/4.jpg","images/5.jpg","images/6.jpg","images/7.jpg","images/8.jpg","images/9.jpg","images/10.jpg"]
+
+    for(var i in myImages){
+        var imageUrl = myImages[i]
+        
+        //below I am just making a new div for each image
+        var divClass = "image_"+i
+        var newDiv = d3.select("body").append("div").attr("class",divClass)
+        
+        //i'll just load the images here to compare
+        d3.select("."+divClass).append("img").attr("src",imageUrl).style("width","200px")
+        //now we get the colors, by giving this function the image url, and also the div we will draw the colors in
+        getColors(imageUrl, divClass)
+    }
+   
+function getColors(imageUrl,divClass){
+    //here and the next line we create the image from the url
+    var img = document.createElement('img');
+    img.setAttribute('src', imageUrl)
+    
+    //now we load it, and when it loads, we get the image's colors using the vibrant library.
+    img.addEventListener('load', function() {
+        var vibrant = new Vibrant(img);
+        //swatches contains the colors of the image that this libray has extracted. try loggin it out.
+        var swatches = vibrant.swatches()
+        
+        //when you log it out you will see that it gives hex, rgb, and other formats.
+        //let's just use rgb, get the swatch's rgb values each time, and draw a square
+        for(var s in swatches){
+            if(swatches[s]!=undefined){
+                var rgbColor = swatches[s].rgb
+                //console.log(rgbColor)//you will see all the colors printed out
+                //let's just draw a div and fill it with that color each time 
+                //- i put it in the drawSwatches function below and passed in the color each time
+                drawSwatches(rgbColor,divClass)
+            }
+        }
+    });
+}
+
+function drawSwatches(color,divClass){
+    //let's just add a little square div each time
+    d3.select("."+divClass).append("div").attr("class","swatch")
+    .style("display","inline-block") //this jsut allows the squares to be next to eachother
+    .style("margin","5px")
+    .style("width","20px")
+    .style("height","20px")
+    .style("border","1px solid black")
+    .style("background-color","rgb("+color[0]+","+color[1]+","+color[2]+")")
+}
+
+</script>    
+
+
+</body>
+</html>
