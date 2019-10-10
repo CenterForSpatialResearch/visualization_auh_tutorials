@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>10112019</title>
+    <script src="../d3.js"></script>
+    <style>
+      
+        </style>
+<body>
+<div id="a" class="sortButton">A</div>
+<div id="b" class="sortButton">B</div>
+<div id="c" class="sortButton">C</div>
+<div id="d" class="sortButton">D</div>
+
+<script>
+    
+   //TODO   
+    //load 1 file csv 
+         
+            d3.csv("tempData.csv")
+                 .then(function(data) {
+                     //console.log(data)
+                     sortByColumn(data,"b")
+                     console.log(data)
+                     
+                     
+        //sort when clicked 
+                     d3.selectAll(".sortButton")
+                         .on("click",function(){
+                             var column = d3.select(this).attr("id")
+                             console.log(column)
+                             console.log(sortByColumn(data,column))
+                         })
+                
+                     
+                 })
+    //sort by a colum 
+                 function sortByColumn(data,columnName){
+                     data.sort(function(item1,item2){
+                         return item1[columnName]-item2[columnName]
+                     }) 
+                     return data
+                 }
+                 
+    //TODO:For Extra Credit, please draw a barchart (rectangles) that are transformed with each sort by using last week's hw and this code.
+  
+            
+</script>    
+
+
+</body>
+</html>

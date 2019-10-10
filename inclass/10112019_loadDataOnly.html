@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>10112019</title>
+    <script src="../d3.js"></script>
+    <style>
+        #svgContainer{
+            position:absolute;
+            left:0px;
+            top:0px;
+        }
+        #img{
+            position:absolute;
+            left:0px;
+            top:0px;
+        }
+        .star{
+            position:absolute;
+            width:10px;
+            height:10px;
+            background-color:rgba(0,255,0,.4);
+        }
+        #save{
+            position:absolute;
+            top:510px;
+            cursor:pointer;
+            padding:10px;
+            border:1px solid black;
+            border-radius:5px;
+        }
+        </style>
+<body>
+
+
+<script>
+    
+   //TODO   
+    //load 1 file csv    
+         /*
+            d3.csv("tempData.csv")
+                         .then(function(data) {
+                             console.log(data)        
+                         })   */
+         
+                
+                
+          /*
+            d3.json("nyc_boroughs.geojson")
+                          .then(function(data) {
+                              console.log(data)        
+                          })  */
+          
+                
+    //load 2 files 
+            var files = [d3.csv("tempData.csv"), d3.json("nyc_boroughs.geojson")]
+            Promise.all(files)
+                .then(function(data){
+                    console.log(data)
+                })
+   
+</script>    
+
+
+</body>
+</html>
