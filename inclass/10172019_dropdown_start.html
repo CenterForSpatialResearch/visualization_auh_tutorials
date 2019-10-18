@@ -28,8 +28,24 @@ https://stackoverflow.com/questions/12541923/calling-javascript-function-from-se
             var dataset = null
             
             function updateColumn(column){
+                
+                
                 console.log(column)
                 //we will use this column value to update the chart
+                d3.selectAll("rect")
+                .each(function(d,i){
+                    
+                    d3.select(this)
+                        .transition()
+                    .duration(1000)
+                    .delay(i*10)
+          			   .attr("y", function(d) {
+          			   		return h - (d[column] * 4);
+          			   })
+         			   .attr("height", function(d) {
+         			   		return d[column] * 4;
+         			   })
+                })
             }
             
             

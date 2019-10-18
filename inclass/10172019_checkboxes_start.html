@@ -24,12 +24,35 @@ https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_display_checkbox_te
               var checkBox = document.getElementById("myCheck");
               var text = document.getElementById("text");
               if (checkBox.checked == true){
-                console.log("checked")
+                  highlight()
               } else {
                 console.log("unchecked")
+                  unhighlight()
               }
             }
             
+            function highlight(){
+                console.log("checked")
+                var max = d3.max(dataset)
+                var min = d3.min(dataset)
+                console.log([max,min])
+                console.log(dataset)
+                
+                d3.selectAll("rect")
+                .each(function(d){
+                    
+                    if(d==max){
+                        d3.select(this).attr("fill","green")
+                    }
+                    if(d==min){
+                        d3.select(this).attr("fill","blue")
+                    }
+                    
+                })
+            }
+            function unhighlight(){
+                 d3.selectAll("rect").attr("fill","red")
+            }
             
 			//Width and height
 			var w = 500;

@@ -9,7 +9,10 @@
         </style>
 	</head>
 	<body>     
+        put in 2 numbers
         
+        
+        <div id="output">output</div>
        <!--
         TODO:
                1. make a prompt that tells users what to do
@@ -20,11 +23,35 @@
                6. display the output-->
        
      
+        <form id="form" onsubmit="return false;">
+            First Number: <input  type="text" id="firstNumber" class="inputBoxes" />
+            Second Number: <input  type="text" id="secondNumber"class="inputBoxes"  />            
+            <!--out check button-->
+            <input class="inputBoxes" type="submit" onclick="check();" />
+        </form>        
         
 		<script type="text/javascript">
+            function check(){
+                var input1 = document.getElementById("firstNumber").value;
+                var input2 = document.getElementById("secondNumber").value;
+                
+                console.log([input1, input2])
+                if(input1=="" || input2==""){
+                    d3.select("#output").html("nothing was input")
+                }else if (isNaN(input1)==true || isNaN(input2)==true){
+                    d3.select("#output").html("has to be number")
+                }else{
+                    Euclid(input1,input2)
+                }
+            }
+            
+            
                         
             //this is our euclid function from before
+                var display = ""
             function Euclid(a,b){
+                
+                
                 //first let's check which number is bigger
                 if(a>b){
                     var ln = parseInt(a)
@@ -38,13 +65,17 @@
                 }
                 
                 
+                
                 //now let's see if the larger is divisible by the smaller and get the remaider
                 var divisor = sn
                 var remainder = ln%divisor
                 //console.log("checking "+a+" and "+b+"..."+"the remainder is "+remainder)
                 
                 if(remainder==0){//if the remainder is 0, we are done
-                    console.log(divisor)                    
+                    display+=divisor+"<br>"
+                    console.log(divisor) 
+                    d3.select("#output").html(display)
+                                       
                 }else{//if it is not, we have to go through this whole thing again
                     //this time the smaller number will be the remainder,
                     //and the larger number the smaller number from before
@@ -52,13 +83,7 @@
                 }
             }
             
-            //TEST CASES
-            //this should return that they are the same number
-           Euclid(524,524)
-            //we know this has a divisor of at least 2 because they are both even
-           Euclid(555562851194192,20101012)
-            ////we know this doesn't have any besides 1 because they are both prime numbers
-            Euclid(6113,1213)
+     
             
             
 		</script>
