@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>checkbox</title>
+        <script src="../d3.js"></script>
+        <style>
+            /*put some styles here to make buttons and inputs more prominent*/
+        </style>
+	</head>
+	<body>     
+        Checkbox: <input type="checkbox" id="myCheck"  onclick="myFunction()">
+        
+        
+        
+<!--
+        TODO:
+        link check boxes to data and show or hide details - largest and smallest, or top 3
+        find check box code here:
+https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_display_checkbox_text
+                -->
+		<script type="text/javascript">
+            function myFunction() {
+              var checkBox = document.getElementById("myCheck");
+              var text = document.getElementById("text");
+              if (checkBox.checked == true){
+                console.log("checked")
+              } else {
+                console.log("unchecked")
+              }
+            }
+            
+            
+			//Width and height
+			var w = 500;
+			var h = 100;
+			var barPadding = 1;
+			
+			var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+							11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+			
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+
+			svg.selectAll("rect")
+			   .data(dataset)
+			   .enter()
+			   .append("rect")
+			   .attr("x", function(d, i) {
+			   		return i * (w / dataset.length);
+			   })
+			   .attr("y", function(d) {
+			   		return h - (d * 4);
+			   })
+			   .attr("width", w / dataset.length - barPadding)
+			   .attr("height", function(d) {
+			   		return d * 4;
+			   })
+			   .attr("fill", "red");
+            
+		</script>
+	</body>
+</html>

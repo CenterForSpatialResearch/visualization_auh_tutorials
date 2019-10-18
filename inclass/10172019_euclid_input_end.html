@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Euclid's Algorithm with Input</title>
+        <script src="../d3.js"></script>
+        <style>
+            body{
+                font-family:helvetica;
+            }
+            .inputBoxes{
+                display:inline-block;
+                font-size:24px;
+                border:2px solid black;
+                border-radius:5px;
+                margin:20px;
+                padding:5px;
+                color:red;
+            }
+        </style>
+	</head>
+	<body>     
+        
+        Input any two whole numbers to ge their greatest common demoninator
+         
+<!--
+        our input has 3 elements, 2 input boxes for the 2 numbers, and then a submit button that goes to check
+-->
+        <form id="form" onsubmit="return false;">
+            First Number: <input  type="text" id="firstNumber" class="inputBoxes" />
+            Second Number: <input  type="text" id="secondNumber"class="inputBoxes"  />            
+            <!--out check button-->
+            <input class="inputBoxes" type="submit" onclick="check();" />
+        </form>
+        
+        
+        <div id="output" style="position:absolute; top:140px; left:20px; width:200px;" >output</div>
+     
+        
+		<script type="text/javascript">
+            var display = ""
+            //check if there are 2 numbers
+            function check() {
+                var input1 = document.getElementById("firstNumber").value;
+                var input2 = document.getElementById("secondNumber").value;
+                //our validation cases
+                //either input cannot be empty
+                if(input1=="" || input2==""){
+                    d3.select("#output").html("There has to be 2 inputs")
+                }else if (isNaN(input1)!=true &&isNaN(input2)!=true){//both have to be numbers
+                    Euclid(input1,input2)
+                }
+                else{
+                    d3.select("#output").html("Inputs have to be numbers")
+                }
+                
+            }
+            
+            function Euclid(a,b){
+                //first let's check which number is bigger
+                if(a>b){
+                    var ln = parseInt(a)
+                    var sn = parseInt(b)
+                }else if(a<b){
+                    var ln = parseInt(b)
+                    var sn = parseInt(a)
+                }else{
+                    display=a+" and "+b+" are the same and both divisible by "+a+"<br>"
+                    d3.select("#output").html(display)
+                    return
+                }
+                
+                
+                //now let's see if the larger is divisible by the smaller and get the remaider
+                var divisor = sn
+                var remainder = ln%divisor
+                    display +="checking "+a+" and "+b+"..."+"the remainder is "+remainder+"<br><br>"
+                //console.log("checking "+a+" and "+b+"..."+"the remainder is "+remainder)
+                
+                if(remainder==0){//if the remainder is 0, we are done
+                    display +="checking "+a+" and "+b+"..."+"the remainder is "+remainder+", the denominator is "+divisor+"<br><br>"
+                    d3.select("#output").html(display)
+                    
+                    return divisor
+                }else{//if it is not, we have to go through this whole thing again
+                    //this time the smaller number will be the remainder,
+                    //and the larger number the smaller number from before
+                    Euclid(remainder,sn)//this is a recursive function because it calls itself
+                }
+            }
+            
+            //TEST CASES
+            //this should return that they are the same number
+          // Euclid(524,524)
+          //  //we know this has a divisor of at least 2 because they are both even
+          // Euclid(555562851194192,20101012)
+          //  ////we know this doesn't have any besides 1 because they are both prime numbers
+          //  Euclid(6113,1213)
+            
+            
+		</script>
+	</body>
+</html>

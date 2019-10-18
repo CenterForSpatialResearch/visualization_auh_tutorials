@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>dropdown</title>
+        <script src="../d3.js"></script>
+        <style>
+            /*put some styles here to make buttons and inputs more prominent*/
+        </style>
+	</head>
+	<body>     
+
+<!--
+        TODO:
+        make a function to draw each column into bar chart
+        attach class to each rect
+        highlight and select on mouseover
+                -->
+		<script type="text/javascript">
+            var dataset = null
+            
+           
+            
+			//Width and height
+			var w = 300;
+			var h = 300;
+			var barPadding = 1;
+			
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+        
+           d3.csv("tempData_wId.csv")
+                .then(function(data) {
+                    dataset = data
+                    
+
+                     svg.selectAll("rect")
+         			   .data(data)
+         			   .enter()
+         			   .append("rect")
+         			   .attr("x", function(d, i) {
+                           
+         			   		return i * (w / data.length);
+         			   })
+         			   .attr("y", function(d) {
+         			   		return h - (d.b * 4);
+         			   })
+         			   .attr("width", w / data.length - barPadding)
+         			   .attr("height", function(d) {
+         			   		return d.b * 4;
+         			   })
+         			   .attr("fill", "red");
+    
+               } )     
+                       
+                
+        
+            
+		</script>
+	</body>
+</html>

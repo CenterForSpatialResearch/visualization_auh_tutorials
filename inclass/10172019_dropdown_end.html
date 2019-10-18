@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>dropdown</title>
+        <script src="../d3.js"></script>
+        <style>
+            /*put some styles here to make buttons and inputs more prominent*/
+        </style>
+	</head>
+	<body>     
+        <select onChange="updateColumn(this.value)">
+            <option>a</option>
+            <option>b</option>
+            <option>c</option>
+            <option>d</option>
+        </select>      
+        
+<!--
+        TODO:
+        link dropdown to data and display data according to selection
+        find dropdown code here:
+https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_select
+        find the most basic example here:
+https://stackoverflow.com/questions/12541923/calling-javascript-function-from-select-onchange
+                -->
+		<script type="text/javascript">
+            var dataset = null
+            
+            function updateColumn(column){
+                d3.selectAll("rect")
+                .each(function(d,i){
+                    d3.select(this)
+                    .transition()
+                    .duration(1000)
+                    .delay(i*10)
+                    .attr("y",function(){
+                        return h - (d[column] * 4);
+                    })
+                    .attr("height",function(){
+                        return d[column] * 4;
+                    })
+                })
+            }
+            
+            
+			//Width and height
+			var w = 500;
+			var h = 400;
+			var barPadding = 1;
+			
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+        
+           d3.csv("tempData.csv")
+                .then(function(data) {
+                    dataset = data
+                     svg.selectAll("rect")
+         			   .data(data)
+         			   .enter()
+         			   .append("rect")
+         			   .attr("x", function(d, i) {
+         			   		return i * (w / data.length);
+         			   })
+         			   .attr("y", function(d) {
+         			   		return h - (d.a * 4);
+         			   })
+         			   .attr("width", w / data.length - barPadding)
+         			   .attr("height", function(d) {
+         			   		return d.a * 4;
+         			   })
+         			   .attr("fill", "red");
+    
+               } )     
+                       
+                
+        
+            
+		</script>
+	</body>
+</html>

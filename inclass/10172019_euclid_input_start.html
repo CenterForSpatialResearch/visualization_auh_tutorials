@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Euclid's Algorithm with Input</title>
+        <script src="../d3.js"></script>
+        <style>
+            /*put some styles here to make buttons and inputs more prominent*/
+        </style>
+	</head>
+	<body>     
+        
+       <!--
+        TODO:
+               1. make a prompt that tells users what to do
+               2. make 2 text boxes for the 2 numbers users will input
+               3. make a button for users to click to check the numbers
+               4. validate numbers
+               5. calculate using euclide
+               6. display the output-->
+       
+     
+        
+		<script type="text/javascript">
+                        
+            //this is our euclid function from before
+            function Euclid(a,b){
+                //first let's check which number is bigger
+                if(a>b){
+                    var ln = parseInt(a)
+                    var sn = parseInt(b)
+                }else if(a<b){
+                    var ln = parseInt(b)
+                    var sn = parseInt(a)
+                }else{
+                    console.log(a+" and "+b+" are the same and both divisible by "+a)
+                    return
+                }
+                
+                
+                //now let's see if the larger is divisible by the smaller and get the remaider
+                var divisor = sn
+                var remainder = ln%divisor
+                //console.log("checking "+a+" and "+b+"..."+"the remainder is "+remainder)
+                
+                if(remainder==0){//if the remainder is 0, we are done
+                    console.log(divisor)                    
+                }else{//if it is not, we have to go through this whole thing again
+                    //this time the smaller number will be the remainder,
+                    //and the larger number the smaller number from before
+                    Euclid(remainder,sn)//this is a recursive function because it calls itself
+                }
+            }
+            
+            //TEST CASES
+            //this should return that they are the same number
+           Euclid(524,524)
+            //we know this has a divisor of at least 2 because they are both even
+           Euclid(555562851194192,20101012)
+            ////we know this doesn't have any besides 1 because they are both prime numbers
+            Euclid(6113,1213)
+            
+            
+		</script>
+	</body>
+</html>
