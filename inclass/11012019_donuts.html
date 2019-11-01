@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="../favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <title>basic located</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    
+    
+    
+<script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+  
+    
+    <style>
+      
+    </style>
+</head>
+<body>
+    <div id="button">button</div>
+</div>
+		<script type="text/javascript"> 
+            var w = 1200
+            var h = 800
+        d3.csv("temp_pie_line_dataset.csv")
+        .then(function(data){
+            
+            // we need just 1 svg, so put it here
+       
+            var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+            
+            var colors1 = ["#68b859","#cbcf49","#6c7c3f","#7fdf4a","#c2d199"]
+            var colors2 = ["#647c77","#59e9b0","#478573","#8fd8ca","#42ab80"]
+            
+            pieChart(data,"c1",100,120,svg,colors1,200)
+            pieChart(data,"c2",120,140,svg,colors2,200)
+            pieChart(data,"c3",140,160,svg,colors1,200)
+            pieChart(data,"c4",160,180,svg,colors2,200)
+            pieChart(data,"c5",180,200,svg,colors2,200)
+            
+            d3.select("#button")
+            .on("click",function(){
+                d3.selectAll(".c1").transition().duration(1000)
+                 .attr("transform", "translate(" + 1000+ "," + h/2+ ")");
+                 
+                d3.selectAll(".c2").transition().duration(1000).delay(1000)
+                 .attr("transform", "translate(" + 900+ "," + h/2+ ")");
+                 
+                d3.selectAll(".c3").transition().duration(1000).delay(2000)
+                 .attr("transform", "translate(" + 800+ "," + h/2+ ")");
+                 
+                d3.selectAll(".c4").transition().duration(1000).delay(3000)
+                 .attr("transform", "translate(" + 700+ "," + h/2+ ")");
+                 
+                d3.selectAll(".c5").transition().duration(1000).delay(4000)
+                 .attr("transform", "translate(" + 600+ "," + h/2+ ")");
+            })
+        })
+            
+            
+    function pieChart(data,column,inner,outer,svg,colors,x){
+            //basic svg setup        
+        var pie = d3.pie();
+        var arc = d3.arc().innerRadius(inner).outerRadius(outer)
+      
+        var array = []
+        for(var d in data){
+            array.push(data[d][column])
+        }
+        
+        var arcs = svg.selectAll("g.arc")
+                .data(pie(array))
+                .enter()
+                .append("g")
+                .attr("class",column)
+                .attr("transform", "translate(" + x+ "," + h/2+ ")")
+                .append("path")
+                .attr("fill", function(d, i) {
+                    return colors[i];
+                })
+                .attr("stroke","#ffffff")
+                .attr("stroke-width",3)
+                .attr("d", arc);
+    }    
+
+</script>
+</body>
+</html>

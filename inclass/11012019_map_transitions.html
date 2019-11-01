@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="../favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <title>basic basemap</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+  
+    
+    <style>
+      
+    </style>
+</head>
+<body>
+    <div id="button">button</div>
+</div>
+		<script type="text/javascript"> 
+            for(var i = 0; i<100;i++){
+                console.log([i+" mod 8 is"+i%8])
+            }
+       
+        var width = window.innerWidth
+        var height = window.innerHeight
+
+        var svg = d3.select("body").append("svg").attr("width",width).attr("height", height);           
+
+        var geoPath = "nyc_boroughs.geojson";
+        var dataPath = "NYC_Parks_Events_2019.csv";
+
+        Promise.all([d3.json(geoPath), d3.csv(dataPath)]).then(function(data) {
+                var geo = data[0];
+                var places = data[1];
+                drawOutline(geo)
+                drawDots(places,geo)
+                
+                d3.select("#button")
+                .on("click",function(){
+                    updateDots(places)
+                })
+            });
+            
+            function drawOutline(geo){
+                var padding = 50
+                var projection = d3.geoAlbers()
+                        .fitExtent([[padding,padding],[width-padding,height-padding]],geo)
+
+                var path = d3.geoPath().projection(projection);
+
+                svg.append("path")
+                    .attr("d", path(geo))
+                    .attr("fill", "none")
+                    .attr("stroke", "#aaaaaa")
+                    .attr("stroke-width",.5)
+            }
+            
+            function drawDots(places,geo){
+                var padding = 50
+                var projection = d3.geoAlbers()
+                        .fitExtent([[padding,padding],[width-padding,height-padding]],geo)
+                
+                svg.selectAll("circle")
+                	.data(places)
+                    .enter()
+                	.append("circle")
+                	.attr("r", 5)
+                	.attr("cx", function(d) {
+                  	    return projection([d.long,d.lat])[0]
+                	})
+                	.attr("cy", function(d) {
+                  	    return projection([d.long,d.lat])[1]
+                	})
+                	.attr("opacity", 0.1)
+            }
+            
+            function  updateDots(places){
+                var gridSize = 10
+                var columns = 40
+                var sortedByName =  places.sort(function(a, b) { 
+                                        return a.name- b.name;
+                                    })
+                svg.selectAll("circle")
+                	.data(sortedByName)
+                    .transition()
+                    .duration(1000)
+                    .delay(function(d,i){return i})
+                	.attr("r", 30)
+                	.attr("cx", function(d,i) {
+                        
+                  	    return (i%columns)*gridSize
+                	})
+                	.attr("cy", function(d,i) {
+                        return Math.floor(i/columns)*gridSize+gridSize
+                    })
+                	.attr("opacity", 1)
+                	.attr("r", 3)
+            }
+</script>
+</body>
+</html>

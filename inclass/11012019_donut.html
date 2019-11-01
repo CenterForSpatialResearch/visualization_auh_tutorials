@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <meta charset="utf-8">
+    <link href="../favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <title>basic located</title>    
+    
+    
+<script type="text/javascript" src="../d3.js"></script>
+  
+    
+    <style>
+      
+    </style>
+</head>
+<body>
+    
+</div>
+		<script type="text/javascript"> 
+            
+        d3.csv("temp_pie_line_dataset.csv")
+        .then(function(data){
+            pieChart(data,"c1")
+        })
+            
+            
+    function pieChart(data,column){
+            //basic svg setup
+            var w = 500
+            var h = 500
+            var inner = 100
+            var outer = 200
+        
+        var array = []
+        for(var d in data){
+            array.push(data[d][column])
+        }
+        
+        var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+        
+       // define path
+        var pie = d3.pie();
+        var arc = d3.arc().innerRadius(inner).outerRadius(outer)
+        var colors = ["#68b859","#cbcf49","#6c7c3f","#7fdf4a","#c2d199"]
+
+        //draw path
+        var arcs = svg.selectAll("g.arc")
+                    .data(pie(array))
+                    .enter()
+                    .append("g")
+                    .attr("class", "arc")
+                    .append("path")
+                    .attr("fill", function(d, i) {
+                    	return colors[i];
+                    })
+                    .attr("d", arc)
+                    .attr("transform", "translate(" + outer+ "," + outer + ")");//move center to middle of screen
+    }    
+
+</script>
+</body>
+</html>

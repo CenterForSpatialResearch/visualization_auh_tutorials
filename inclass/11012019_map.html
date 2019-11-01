@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="../favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <title>basic basemap</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+  
+    
+    <style>
+      
+    </style>
+</head>
+<body>
+    
+</div>
+		<script type="text/javascript"> 
+       //set up svg, nothing new here
+        var width = window.innerWidth
+        var height = window.innerHeight
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width",width)
+            .attr("height", height);           
+
+        //we need a data file, and a geopath file
+        var dataPath = "NYC_Parks_Events_2019.csv";//these are some park events with coordinates from your colleague
+        var geoPath = "nyc_boroughs.geojson";//this is a geojson, which is json format of outlines for nyc
+
+        //promise allows us to load many files, and only excutes the code inside it once the files have all loaded
+        //before we used d3.csv to load 1 csv file and .then to excute code once its been loaded
+        Promise.all([d3.json(geoPath), d3.csv(dataPath)])//here we use d3.json to load the json data, and d3.csv to load the csv data
+        .then(function(data) {//.then is the same as before, we are just saying wait till loading is done, then do this.
+            var geo = data[0];// data in blue in the line above is the result of the promise, so the first item is the geo
+            var places = data[1];//and the second is the place markers
+            //console.log(data)//try uncommenting and seeing what data is at this point to get a better idea
+            
+            drawOutline(geo) //call the draw outline function from below 
+        });
+        
+        function drawOutline(geo){
+            var padding = 50
+            var projection = d3.geoAlbers()
+                    .fitExtent([[padding,padding],[width-padding,height-padding]],geo)
+
+            var path = d3.geoPath().projection(projection);
+
+            svg.append("path")
+                .attr("d", path(geo))
+                .attr("fill", "none")
+                .attr("stroke", "#aaaaaa")
+                .attr("stroke-width",1)
+        }
+        </script>
+        
+</body>
+</html>

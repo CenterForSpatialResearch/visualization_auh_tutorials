@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="../favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <title>basic located</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    
+    
+    
+<script type="text/javascript" src="../d3.js"></script>
+  
+    
+    <style>
+      
+    </style>
+</head>
+<body>
+    
+</div>
+		<script type="text/javascript"> 
+            
+        d3.csv("temp_pie_line_dataset.csv")
+        .then(function(data){
+            lineChart(data,"c1")
+        })
+            
+            
+    function lineChart(data,column){
+            //basic svg setup
+            var w = 700
+            var h = 500
+            var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+            
+           //The scales for x and y
+            var yScale = d3.scaleLinear()
+                .domain([0,90])
+                .range([h-20,20])
+            //x uses the index value to place the dots evenly across
+            //can of course be ordinal using band
+            var xScale = d3.scaleLinear().domain([0,data.length]).range([0,w-20])
+         
+            //define the line
+            var area = d3.area()
+                .x(function(d,i){
+                        return xScale(i)
+                })
+                .y0(function(d,i){//y0 is the same as the line
+                        return yScale(parseInt(d[column]))
+                })
+                .y1(function(d,i){//y1 is the 2nd line to close our shape it is at the bottom so it is the height
+                    return h
+                    //also try the below
+                    return d["c3"]
+                })   
+      
+        // draw the line
+            svg.append("path")
+                .data([data])
+                .attr("d",area)
+                .attr("fill", "gray")//styles the line with attr
+                .attr("stroke", "black")//styles the line with attr
+    }    
+
+</script>
+</body>
+</html>
