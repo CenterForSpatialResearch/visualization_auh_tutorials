@@ -43,14 +43,14 @@
          
             //define the line
             var area = d3.area()
-                .x(function(d,i){
+                .y(function(d,i){
                         return xScale(i)
                 })
-                .y0(function(d,i){//y0 is the same as the line
+                .x0(function(d,i){//y0 is the same as the line
                         return yScale(parseInt(d[column]))
                 })
-                .y1(function(d,i){//y1 is the 2nd line to close our shape it is at the bottom so it is the height
-                    return h
+                .x1(function(d,i){//y1 is the 2nd line to close our shape it is at the bottom so it is the height
+                   // return h
                     //also try the below
                     return d["c3"]
                 })   

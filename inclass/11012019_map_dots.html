@@ -6,7 +6,7 @@
     <link href="../favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <title>basic basemap</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+    <script type="text/javascript" src="../d3.js"></script>
   
     
     <style>
@@ -52,6 +52,7 @@
                 var projection = d3.geoAlbers()
                         .fitExtent([[padding,padding],[width-padding,height-padding]],geo)
                                 
+                                                
                 svg.selectAll("circle")
                 	.data(places)
                     .enter()

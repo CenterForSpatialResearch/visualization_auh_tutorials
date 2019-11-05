@@ -40,10 +40,11 @@
         
         
         //define the arc
-        var arc = d3.arc().innerRadius(inner).outerRadius(outer)
+        var arc = d3.arc().innerRadius(0).outerRadius(outer)
 
         //this is what pie does to data
         console.log(pie([1,1,1,1,1,1,1,1,1,1,1,1]))
+        console.log(pie([1,2,3]))
         
         //if we want pie slices to be different colors, make a dictionary or array
         var colors = ["#68b859","#cbcf49","#6c7c3f","#7fdf4a","#c2d199"]
@@ -51,7 +52,7 @@
         //Draw arcs
         
         var arcs = svg.selectAll("g.arc")
-            .data(pie([1,1,1,1,1,1,1,1,1,1,1,1]))//this is the data, try console logging it to see pie in action
+            .data(pie([1,2,3]))//this is the data, try console logging it to see pie in action
             .enter()
             .append("g")
             .attr("class", "arc")

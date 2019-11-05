@@ -26,7 +26,7 @@
 
         var svg = d3.select("body").append("svg").attr("width",width).attr("height", height);           
 
-        var geoPath = "nyc_boroughs.geojson";
+        var geoPath = "nyc_blockGroups.geojson";
         var dataPath = "NYC_Parks_Events_2019.csv";
 
         Promise.all([d3.json(geoPath), d3.csv(dataPath)]).then(function(data) {

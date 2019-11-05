@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>11012019</title>
+    <script src="../d3.js"></script>
+    <style>
+      
+        </style>
+<body>
+
+<script>
+    
+   //TODO   
+    //load 1 file csv 
+         
+            d3.csv("tempData.csv")
+                 .then(function(data) {
+                     
+                     barChart(data[0])
+                     for(var i in data){
+                         console.log(data[i])
+                     barChart(data[i])
+                         
+                     }
+                 })
+                 
+                 function barChart(data){
+                     console.log(data)
+                     var w = 500
+                     var h = 100
+                     var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+                     
+                     svg.selectAll("rect")
+                     .data(Object.keys(data))
+                     .enter()
+                     .append("rect")
+                     .attr("x",function(d,i){return i*20})
+                     .attr("y",function(d,i){
+                         return 0
+                     })
+                     .attr("class",function(d){
+                         return d
+                     })
+                     .attr("width",18)
+                     .attr("height",function(d,i){
+                         return data[d]
+                     })
+                     .on("mouseover",function(d,i){
+                         var currentBarClass = d3.select(this).attr("class")
+                         console.log(currentBarClass)
+                         d3.selectAll("."+currentBarClass).attr("fill","gold")
+                     })
+                 }
+  
+</script>    
+
+
+</body>
+</html>

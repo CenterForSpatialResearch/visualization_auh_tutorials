@@ -33,8 +33,11 @@
         
         var array = []
         for(var d in data){
+            console.log(data[d])
             array.push(data[d][column])
         }
+        
+        console.log(array)
         
         var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
         

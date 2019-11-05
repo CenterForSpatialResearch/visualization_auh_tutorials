@@ -20,17 +20,21 @@
     
 </div>
 		<script type="text/javascript"> 
-            
-        d3.csv("transform_dataset.csv")
+            var w = 500
+            var h = 300   
+        d3.csv("temp_pie_line_dataset.csv")
         .then(function(data){
-            lineChart(data,"c1")
+            
+            var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+            
+            
+            lineChart(data,"c1",svg,"red")
+            lineChart(data,"c2",svg,"green")
+            lineChart(data,"c3",svg,"gold")
         })
             
             
-    function lineChart(data,column){
-            var w = 500
-            var h = 300
-            var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+    function lineChart(data,column,svg,color){
             
             var yScale = d3.scaleLinear()
                 .domain([0,90])
@@ -49,7 +53,7 @@
                 .data([data])
                 .attr("d",line)
                 .attr("fill", "none")
-                .attr("stroke", "black")
+                .attr("stroke", color)
         
          svg.selectAll(".labels")
              .data(data)
