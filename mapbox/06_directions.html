@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Display a map</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='../d3.js'></script>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js'></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.css' type='text/css' />
+  
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css' type='text/css' />
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+
+<script>
+//built in interactions from mapbox 1 - 7
+
+//1.bounds
+//found at:https://docs.mapbox.com/mapbox-gl-js/example/restrict-bounds/
+ // Set bounds to New York, New York
+var bounds = [
+[-75, 39], // Southwest coordinates
+[-73, 41]  // Northeast coordinates
+];
+
+//this part of the example can be found at mapbox: https://docs.mapbox.com/mapbox-gl-js/example/simple-map/
+//you will find the accessToken and the style for your map under "Share" in your specific map in mapbox studio
+mapboxgl.accessToken = 'pk.eyJ1IjoianozMDc3IiwiYSI6ImNqdHczOTkwbDBnOHM0Zm82cXo4anplbXYifQ.x1oWtwpzjoGcuqqh7ME79g';
+var map = new mapboxgl.Map({
+  container: 'map',//thi sis the div that you have mad above in html that you are now placing your map in
+  style: 'mapbox://styles/jz3077/ck2nj1ztk0vws1cnru1jxiq4h',//you will find the accessToken under "Share" in your specific map in mapbox studio
+  center: [-74, 40.8],//the center of the map can be set to any initial value of [lng,lat]
+  zoom: 10,//note that some layers have zoom limits - for example, streets and building footprints are not visible when zoomed out
+  maxBounds: bounds, // Sets bounds as max
+  
+  //5.tilt
+  //look at example here:https://docs.mapbox.com/mapbox-gl-js/example/set-perspective/
+  pitch:60,
+  bearing:-10
+});
+
+
+//2.zoom
+map.addControl(new mapboxgl.NavigationControl());
+
+//3.geolocation
+map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+        trackUserLocation: true
+    }
+));
+
+//4.search
+//also pay attention to the code we added to the header of this file for the geocoder
+//https://docs.mapbox.com/mapbox-gl-js/example/mapbox-gl-geocoder/
+map.addControl(new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl
+    }
+));
+
+//6.directions
+//also pay attention to the 2 files we added to the header of this file for directions
+//https://docs.mapbox.com/mapbox-gl-js/example/mapbox-gl-directions/
+map.addControl(new MapboxDirections({
+accessToken: mapboxgl.accessToken
+}), 'top-left');
+
+//7.icons
+
+
+//adding buttons to work with mapbox interactions 8 - 11
+
+//8.flyto
+
+
+//9.layers
+
+
+//10.data
+
+
+//11.removing mapbox logo* not recommended in real applications - please adhere to rules when using outside of class
+</script>
+
+</body>
+</html>

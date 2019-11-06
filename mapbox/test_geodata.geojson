@@ -1,0 +1,47 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "class": "Foo",
+                "icon": "harbor"
+            },
+            "geometry": {
+            "type": "Point",
+                "coordinates": [
+                    -74.1,
+                    40.8
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "class": "Bar",
+                "icon": "harbor"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -74,
+                    40.7
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "class": "Baz",
+                "icon": "harbor"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -74.1,
+                    40.9
+                ]
+            }
+        }
+    ]
+}

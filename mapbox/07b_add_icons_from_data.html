@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Display a map</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='../d3.js'></script>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js'></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.css' type='text/css' />
+  
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css' type='text/css' />
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+
+<script>
+//built in interactions from mapbox 1 - 7
+
+//this part of the example can be found at mapbox: https://docs.mapbox.com/mapbox-gl-js/example/simple-map/
+//you will find the accessToken and the style for your map under "Share" in your specific map in mapbox studio
+mapboxgl.accessToken = 'pk.eyJ1IjoianozMDc3IiwiYSI6ImNqdHczOTkwbDBnOHM0Zm82cXo4anplbXYifQ.x1oWtwpzjoGcuqqh7ME79g';
+var map = new mapboxgl.Map({
+  container: 'map',//thi sis the div that you have mad above in html that you are now placing your map in
+  style: 'mapbox://styles/jz3077/ck2nj1ztk0vws1cnru1jxiq4h',//you will find the accessToken under "Share" in your specific map in mapbox studio
+  center: [-74, 40.8],//the center of the map can be set to any initial value of [lng,lat]
+  zoom: 10//note that some layers have zoom limits - for example, streets and building footprints are not visible when zoomed out
+});
+
+//7.icons
+//https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+//https://docs.mapbox.com/mapbox-gl-js/example/add-image-animated/
+//https://docs.mapbox.com/mapbox-gl-js/example/custom-marker-icons/
+//https://docs.mapbox.com/mapbox-gl-js/example/geojson-markers/
+
+
+
+//here are some geojson data
+var geojson = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "class": "Foo",
+                "icon": "harbor"
+            },
+            "geometry": {
+            "type": "Point",
+                "coordinates": [
+                    -74.1,
+                    40.8
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "class": "Bar",
+                "icon": "harbor"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -74,
+                    40.7
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "class": "Baz",
+                "icon": "harbor"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -74.1,
+                    40.9
+                ]
+            }
+        }
+    ]
+};
+
+map.on('load', function () {
+ 
+ 
+    map.loadImage('star.png', function(error, image) {//we load the image icon as we did in the previous file
+        map.addImage('star', image);
+        
+        
+            map.addLayer({
+                "id": "points",
+                "type": "symbol",
+                "source": {
+                        "type": "geojson",
+                        "data": geojson,//this is where we reference the geojson data from above
+                },
+                "layout": {//this is where we style the display- size the icons, show the labels etc. for placement and size
+                        "icon-image": "star",
+                        "icon-size": 0.1,
+                        "text-field": "{class}",//uses the class field in the geojson file for our label
+                        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+                        "text-offset": [0, 0.6],
+                        "text-anchor": "top",
+                    },
+                    "paint":{//paint is used to define colors, etc.
+                        "text-color":"red"
+                    }
+                });
+    })
+});
+
+
+
+
+//adding buttons to work with mapbox interactions 8 - 11
+
+//8.flyto
+
+
+//9.layers
+
+
+//10.data
+
+
+//11.removing mapbox logo* not recommended in real applications - please adhere to rules when using outside of class
+</script>
+
+</body>
+</html>
