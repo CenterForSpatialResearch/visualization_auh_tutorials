@@ -43,13 +43,16 @@ var otherData;
 Promise.all([d3.json("test_geodata.geojson"), d3.json("test_data.json")])
     .then(function(data){
         geoData = data[0]
-        otherData = data[1]        
+        otherData = data[1]     
+        
+           
         drawMarkers(geoData,otherData)
         //we can also add the charts like we did in 7c using otherData which we loaded as file
     })
 
 
 function drawMarkers(geoData,otherData){
+    
     map.on('load', function () {
         map.loadImage('star.png', function(error, image) {//we load the image icon as we did in the previous file
             map.addImage('star', image);        

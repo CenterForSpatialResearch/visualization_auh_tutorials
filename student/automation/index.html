@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src="../../d3.js"></script>
+
+<style>
+.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 300px;
+  height: 25px;
+  background: gold;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: black;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: black;
+  cursor: pointer;
+}
+#slider2_submit{
+    border-radius:5px;
+    width:100px;
+    text-align:center;
+    border:1px solid black;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+  Slider 1 outputs numbers as you slide<br>
+  <input type="range" min="1" max="240" value="120" class="slider" id="slider1">
+  <div id="slider1_before">Before Automation:</div>
+  <div id="slider1_after">After Automation: </div>
+   <br>
+   <br>
+   <br>
+    Slider 2 outputs number only on click<br>
+    <input type="range" min="1" max="240" value="120" class="slider" id="slider2">
+    <div id="slider2_submit">SUBMIT</div>
+    <div id="slider2_before"></div>
+    <div id="slider2_after"></div>
+    
+<script type="text/javascript"> 
+ ///SLIDER 1       
+    var slider1 = document.getElementById("slider1")//this is the slider element
+    var rateOfAutomation1 = .8//this is the percentage of time automation changes
+    
+    slider1.oninput = function() {
+        var slider1Before = Math.round(this.value);//this is the before value in minute
+        var slider1BeforeHours = Math.round(slider1Before/60*100)/100//in hours
+        
+        var slider1After = Math.round(slider1Before*rateOfAutomation1)//this is after multiplying by automation rate in minutes
+        var slider1AfterHours = Math.round(slider1After/60*100)/100//in hours
+        
+        d3.select("#slider1_before").html("Before Automation: "+slider1Before+"minutes or "+slider1BeforeHours+" hours")//this displays the before value
+        d3.select("#slider1_after").html("After Automation:"+slider1After+"minutes or "+slider1AfterHours+" hours")//this displays after
+        
+       } 
+        
+ 
+ 
+ 
+ ///SLIDER 2       
+    var slider2 = document.getElementById("slider2")//this is the slider element
+    var rateOfAutomation2 = .5//this is the percentage of time automation changes
+       var slider2Before=120;
+       var slider2BeforeHours=Math.round(slider2Before/60*100)/100;
+       var slider2After=slider2Before*rateOfAutomation2;
+       var slider2AfterHours=Math.round(slider2After/60*100)/100;
+       
+    slider2.oninput = function() {    //everything is still being calculated constantly, but does not display
+        slider2Before = Math.round(this.value);//this is the before value in minute
+        slider2BeforeHours = Math.round(slider2Before/60*100)/100//in hours
+        
+        slider2After = Math.round(slider2Before*rateOfAutomation2)//this is after multiplying by automation rate in minutes
+        slider2AfterHours = Math.round(slider2After/60*100)/100//in hours
+    }
+    
+    d3.select("#slider2_submit")
+    .on("click",function(){
+        d3.select("#slider2_before").html("Before Automation: "+slider2Before+"minutes or "+slider2BeforeHours+" hours")//this displays the before value
+        d3.select("#slider2_after").html("After Automation:"+slider2After+"minutes or "+slider2AfterHours+" hours")//this displays after
+    })
+
+</script>
+
+</body>
+</html>

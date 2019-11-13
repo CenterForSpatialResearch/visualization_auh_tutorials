@@ -127,11 +127,14 @@ map.on('load', function () {
     
     //7c.add interactions on click
     //https://docs.mapbox.com/mapbox-gl-js/example/popup-on-click/
-    map.on('click', 'points', function (e) {
-            var mouseData = e//this is all the click information from the mouse
-            
-            console.log(e.features[0])//this is all the stuff that you have access to in the symbol you clicked, look at the logged out values and 
-            var className = e.features[0].properties.class
+    map.on('click', 'points', function (d) {
+        
+            var mouseData = d//this is all the click information from the mouse
+           
+           
+            console.log(d.features[0])//this is all the stuff that you have access to in the symbol you clicked, look at the logged out values and 
+
+            var className = d.features[0].properties.class
             console.log(className)
             
             //now when we click the icon, let's draw a chart for the data for each icon using dataset2 above
@@ -178,6 +181,8 @@ function barChart(className,mouseData){
     //here we place it by the mouse/icon we clicked
         var x = mouseData.point.x
         var y = mouseData.point.y
+        
+        
         d3.select("#barchart")
         .style("position","absolute")
         .style("margin-left",x+30+"px").style("margin-top",y+"px")

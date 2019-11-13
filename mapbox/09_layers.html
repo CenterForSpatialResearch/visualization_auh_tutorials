@@ -20,7 +20,7 @@
 <body>
 
 <div id='map'></div>
-
+<div id="layerToggle">Toggle</div>
 
 <script>
 
@@ -29,7 +29,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoianozMDc3IiwiYSI6ImNqdHczOTkwbDBnOHM0Zm82cXo4anplbXYifQ.x1oWtwpzjoGcuqqh7ME79g';
 var map = new mapboxgl.Map({
   container: 'map',//thi sis the div that you have mad above in html that you are now placing your map in
-  style: 'mapbox://styles/jz3077/ck2nj1ztk0vws1cnru1jxiq4h',//you will find the accessToken under "Share" in your specific map in mapbox studio
+  style: 'mapbox://styles/jz3077/ck2q978nh2cxj1cnz1fpowon8',//you will find the accessToken under "Share" in your specific map in mapbox studio
   center: [-74, 40.8],//the center of the map can be set to any initial value of [lng,lat]
   zoom: 10//note that some layers have zoom limits - for example, streets and building footprints are not visible when zoomed out
 });
@@ -123,7 +123,7 @@ console.log(map.getStyle().layers)
 //example from mapbox here: https://docs.mapbox.com/mapbox-gl-js/example/toggle-layers/
 
 //add a button
-d3.select("body").append("div").html("Layer Toggle").attr("id","layerToggle").style("z-index",99)
+d3.select("#layerToggle").style("z-index",99)
     .on("click",function(){
         //first find out if it is visible or not
         var visibility = map.getLayoutProperty("water", 'visibility');
