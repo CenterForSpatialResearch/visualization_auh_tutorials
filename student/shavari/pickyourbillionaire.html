@@ -1,0 +1,184 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Pick Your Billionaire</title>
+	<script src="../d3.js"></script>
+	<style>
+		
+		circle:hover {
+			fill: gold;
+		}
+		
+		#tooltip {
+			position: absolute;
+			width: 200px;
+			height: auto;
+			padding: 10px;
+			background-color: white;
+			-webkit-border-radius: 10px;
+			-moz-border-radius: 10px;
+			border-radius: 10px;
+			-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			pointer-events: none;
+		}
+		
+		#tooltip.hidden {
+			display: none;
+		}
+		
+		#tooltip p {
+			margin: 0;
+			font-family: sans-serif;
+			font-size: 16px;
+			line-height: 20px;
+		}
+		
+	</style>
+</head>
+<body>
+	
+	<p><strong>pick your billionaire</strong></p>
+	
+	<br><br>
+	
+<!--	<defs>
+	<linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+	<stop offset="0%" stop-color='#F433FF' stop-opacity="1"></stop>
+	<sotp offset="100%" stop-color='#3DFF33' stop-opacity="1"></stop>
+	</linearGradient>
+
+	<pattern id="jeff-bezos" height="100%" width="100%" patternContentUnits="objectBoundingBox">
+	<image height="1" width="1" preserveAspectRatio="none" xmlns:xlink="http://localhost:8888/FINAL%20PROJECT/" xlink:href="01.png"></image>
+	</pattern>
+	</defs>
+
+	<circle cx="100" cy="100" r="40" fill="url(#jeff-bezos)"></circle> -->
+	
+<script type="text/javascript">
+		
+		var w = 800
+		var h = 800
+		var padding = 40
+		
+		d3.csv("billionaire_data.csv").then(function(data){
+			//data.forEach(function(d) {
+			//	d.netWorth = +d.netWorth;
+			//console.log(data[0])
+				
+				dataset = data;
+				
+				// xScale = d3.scaleTime()
+// 				.domain([0, d3.max(dataset, function(d) {return d.netWorth; })
+// 				])
+// 				.range([h - padding, padding]);
+				
+			/*
+			    var svg = d3.select("body")
+			                .append("svg")
+			                .attr("width", w)
+			                .attr("height", h);
+			                
+			                svg.selectAll("circle")
+			                .data(dataset)
+			                .enter()
+			                .append("circle")
+			                .attr("cx", function(d,i){
+			                    return i%10*70+70
+			                })
+			                .attr("cy", function(d,i){
+			                    return Math.floor(i/10)*70+70
+			                })
+			                .attr("r", 30)    
+			                .style("background-image", function(d,i){
+			                    return "url(test.jpeg)"
+			                });*/
+			
+                
+                svg.selectAll("img")
+                .data(dataset)
+                .enter()
+                .append("svg:image")
+                    .attr("xlink:href", function(d){
+                        return "test.jpeg"
+                    })
+                    .attr("width", 50)
+                    .attr("height", 50)
+                    .attr("x", function(d,i){
+					return i%10*70+70
+				})
+                    .attr("y",function(d,i){
+					return Math.floor(i/10)*70+70
+				})
+                .on("click",function(d){
+                    console.log(d.netWorth)
+                })
+					
+				// .on("mouseover", function(d) {
+	//
+	// 			   var xPosition = parseFloat(d3.select(this).attr("cx"));
+	// 			   var yPosition = parseFloat(d3.select(this).attr("cy"));
+	//
+	// 			  // var netWorth = Math.round(d.netWorth)
+	//
+	// 					svg.append("text")
+	// 						.attr("id", "tooltip")
+	// 						.attr("x", xPosition)
+	// 						.attr("y", yPosition)
+	// 						.attr("text-anchor", "middle")
+	// 						.attr("font-family", "sans-serif")
+	// 						.attr("font-size", "11px")
+	// 						.attr("font-weight", "bold")
+	// 						.attr("fill", "black")
+	//
+	// 		d3.select("#tooltip")
+	// 			.style("left", xPosition + "px")
+	// 			.style("top", yPosition + "px")
+	// 			.select("#value")
+	// 			.text(netWorth);
+	//
+	// 			d3.select("#tooltip").classed("hidden", false);
+	// 			})
+	
+svg.selectAll("text")
+   .data(dataset)
+   .enter()
+   .append("text")
+   .text(function(d) {
+	   console.log(d["billionaireName"])
+   		return d["billionaireName"] //+ d["netWorth"];
+   })
+   .attr("x", function(d,i){
+					return i%10*70+70
+				})
+   .attr("y", function(d,i){
+					return Math.floor(i/10)*70+70
+				})
+   .attr("font-family", "sans-serif")
+   .attr("font-size", "11px")
+   .attr("fill", "red");
+				
+				
+		//	});
+		});
+		
+		// var svgContainer = d3.select("body").append("svg")
+// 		.attr("width", 1000)
+// 		.attr("height", 1000);
+//
+// 		var circle = svgContainer.append("circle")
+// 		.attr("cx", 100)
+// 		.attr("cy", 100)
+// 		.attr("r", 50);
+//
+// 		circle.append("image")
+// 		.attr("xlink:href", "01.png")
+// 		.attr("x", 25)
+// 		.attr("y", 25)
+// 		.attr("width", 100)
+// 		.attr("height", 100);
+//
+		</script>
+	</body>
+	</html>

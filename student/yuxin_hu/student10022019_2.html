@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: Pie layout pie chart</title>
+		<script type="text/javascript" src="../../d3.js"></script>
+		<style type="text/css">
+
+			p {
+				font-family: sans-serif;
+				font-size: 24px;
+				color: black;
+			}	
+			
+			path:hover {
+			  fill: #333333;
+			  stroke: #ff0000;
+			  stroke-width: 10;
+			  transition-delay: 0;
+			}
+			
+
+		</style>
+	</head>
+	<body>
+		
+		<p>Studio Colorfulness at Avery 700</p>
+		
+	<script type="text/javascript">
+
+			//Width and height
+			var w = 800;
+			var h = 800;
+            var svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+            
+			var circle = svg.append("circle")
+			.attr("cx",w/2)
+			.attr("cy",h/2)
+			.attr("r", 285)
+			.attr("fill", "white")
+			.attr("stroke","black")
+			.attr("stroke-width",4)
+            
+            //fake data in format, each clothing color has a random value between 0 and 50.
+            //each row is a day
+            //TODO: put your data into this format so that it can be stackeds
+			var dataset = [
+				{ blues: 2, greens: 2, oranges: 0,  reds: 1,  beiges: 0, colorfuls: 0,  purples: 0,  pinks: 0,  browns: 0,  temp: 21, bws: 10,total: 15},
+				{ blues: 1, greens: 1, oranges: 0,  reds: 1,  beiges: 1, colorfuls: 1,  purples: 0,  pinks: 0,  browns: 0,  temp: 26, bws: 8,total: 13},
+				{ blues: 2, greens: 0, oranges: 0,  reds: 1,  beiges: 0, colorfuls: 0,  purples: 0,  pinks: 0,  browns: 0,  temp: 28, bws: 6,total: 9},
+				{ blues: 2, greens: 1, oranges: 1,  reds: 0,  beiges: 0, colorfuls: 1,  purples: 0,  pinks: 0,  browns: 0,  temp: 30, bws: 9,total: 14},
+				{ blues: 0, greens: 1, oranges: 0,  reds: 0,  beiges: 0, colorfuls: 0,  purples: 1,  pinks: 1,  browns: 0,  temp: 31, bws: 13,total: 16},
+				{ blues: 2, greens: 0, oranges: 0,  reds: 1,  beiges: 1, colorfuls: 0,  purples: 0,  pinks: 0,  browns: 1,  temp: 24, bws: 7,total: 12},
+				{ blues: 5, greens: 1, oranges: 1,  reds: 1,  beiges: 0, colorfuls: 0,  purples: 1,  pinks: 0,  browns: 0,  temp: 25, bws: 7,total: 16},
+				{ blues: 2, greens: 2, oranges: 1,  reds: 1,  beiges: 1, colorfuls: 1,  purples: 1,  pinks: 0,  browns: 0,  temp: 28, bws: 9,total: 18},
+				{ blues: 2, greens: 0, oranges: 0,  reds: 1,  beiges: 1, colorfuls: 0,  purples: 0,  pinks: 0,  browns: 0,  temp: 28, bws: 6,total: 10},
+				{ blues: 1, greens: 0, oranges: 0,  reds: 1,  beiges: 0, colorfuls: 1,  purples: 1,  pinks: 0,  browns: 1,  temp: 22, bws: 7,total: 12}
+			];
+		
+            //stacking each row - each day
+            var stack = d3.stack().keys(["blues","greens","oranges","reds","beiges","colorfuls","purples","pinks","browns","bws"])
+            var stackedData = stack(dataset)
+            //you will find above section in textb ook in page 265 under stacked bar charts, not pie
+            
+            
+            //we need to figure out what color to draw each of the clothing colors, I put some placeholders here
+            //TODO: put in real colors that correspond with your data 
+            var colorDictionary = {
+                blues:"#638ccc",
+                greens:"#60a862",
+                oranges:"#b1a031",
+                reds:"#cb5a4c",
+                beiges:"#c1bb87",
+				colorfuls:"#ffeeee",
+				purples:"#ba59c3",
+				pinks:"#f19494",
+				browns:"#8a5f31",
+				bws:"#222222"
+				
+            }
+            
+            //let's iterate through all our data, each stacked[i] is a color group
+            for(var i in stackedData){
+                
+                //we get a hex color based on the clothing color
+                var clothingColor = stackedData[i].key
+                var color = colorDictionary[clothingColor]
+                var scale = dataset.keys("total")
+                
+                //so this is 1 clothing color for all days below
+                var clothingData = stackedData[i]
+                
+                //within each clothing color let's separate the days out
+                for(var day in clothingData){
+                    var dailyclothingData = clothingData[day]
+
+                    if(dailyclothingData.data!=undefined){
+                        var temperature = dailyclothingData.data.temp
+                        
+                        //NEW 1: the scale is just for the total of each day 
+                        //so that no matter what the amount is, it gets scaled to the max radius, which i set to 300 in this case
+                        var rScale = d3.scaleLinear()
+                        .domain([0,dailyclothingData.data.total])
+                        .range([0,300])
+                        //to make an arc, we need 4 things, start angle, end angle, inner radius, outter radius
+                        //we have the inner and out radius from our stacked data, they are:
+                
+                        var inner = rScale(dailyclothingData[0])// * 20//TODO: you will need to implement a scale here so that the colors fit within the svg
+                        var outer = rScale(dailyclothingData[1])// * 20//TODO: also apply scale to this
+                        //we can get our angles pretty easily
+                        //the angle widths are always the same because it is a day
+                        //day is day, each circle is 2*Math.PI, so....
+                        //let's say we have 10 days
+                        var slice = parseInt(day)
+                        var start= (2/10)*slice*Math.PI
+                        var end= 2/10*(slice+1)*Math.PI
+                    
+                        //let's put this in the right format by making an object with our calculated values in thme
+                        //this data object below is 1 arch representing 1 fruit for 1 day.
+                    
+                        if(isNaN(inner)==false){
+                            var data = {
+                              startAngle: start,
+                              endAngle: end,
+                              innerRadius: inner,
+                                outerRadius: outer,
+                                color:clothingColor,//NEW 2a: adding color to data passed to draw
+                                temperature:temperature//NEW 2b: adding temperature to data passed to draw
+                            }
+                        
+                            //once we have the data all formatted, we draw the arc with the function below called drawArc, we pass in our 2 variables, data and the color of the arc.
+                            drawArc(data,color)
+                        }
+                    }
+                    
+                    
+                }
+                
+            }
+                
+
+            //this function draws the arc
+            function drawArc(data,color){
+                var arcGenerator = d3.arc();//this is calling the built in d3 function arc
+			    var pathData = arcGenerator(data);//we apply it to our data to get the right dimensions
+                        
+                        
+                        //below is the basics for drawing a path, just append, and set d to the data of the path
+                  svg.append('path')
+                    .attr('d', pathData)
+                    .attr("transform","translate("+w/2+","+h/2+")")//here we are moving everything over to the center
+                    .attr("stroke","white")//here I set the stroke color to white so I can see slices better
+                    .attr("stroke-width",2)
+                    .attr("fill",color)//here we color the actual arc with the color that we passed into the function
+        			.on("mouseover",function(){
+                        //NEW 2c: you can now access the temperature
+                        var color = data.color
+                        var temperature = data.temperature
+                        //NEW 2d: you need to turn this console log statement into the tooltip
+                        console.log(color,temperature)
+        			});
+            }
+
+            //d3.selectAll("path")
+			//.on("mouseover",function(d){
+			//});
+            
+            	
+		</script>
+	</body>
+</html>

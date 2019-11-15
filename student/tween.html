@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+</head>
+<body>
+	<script>
+		var svg = d3.select("body").append("svg")
+		    		.attr("width", 500)
+						.attr("height", 500);
+
+		var lineData = [[200,300],[200,20],[500,330]]
+
+		var path = svg.append("path")
+                        .data([lineData])
+            .attr("d", d3.line().curve(d3.curveCardinal))
+			.style("stroke", "black")
+			.style("fill", "none");
+
+		svg.append("rect")
+			.attr("x", 25) //Starting x
+			.attr("y", 25) //Starting y
+			.attr("height", 25)
+			.attr("width", 5)
+			.transition()
+			.delay(250)
+			.duration(1000)
+			.tween("pathTween", function(){return pathTween(path)})
+			// .tween("pathTween", pathTween); //Custom tween to set the cx and cy attributes
+
+		function pathTween(path){
+			var length = path.node().getTotalLength(); // Get the length of the path
+			var r = d3.interpolate(0, length*.8); //Set up interpolation from 0 to the path length
+			return function(t){
+				var point = path.node().getPointAtLength(r(t)); // Get the next point along the path
+				d3.select(this) // Select the circle
+					.attr("x", point.x) // Set the cx
+					.attr("y", point.y) // Set the cy
+			}
+		}
+	</script>
+</body>
+</html>

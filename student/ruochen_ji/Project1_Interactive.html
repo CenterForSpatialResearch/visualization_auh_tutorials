@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Daily Meal Pattern | R.Ji</title>
+		<script type="text/javascript" src="../../d3.js"></script>
+		<style type="text/css">
+			
+			#divide {
+				stroke: red;
+				stroke-width: 2px;}
+			
+			#dayPoptext {
+				font-family: helvetica;
+				font-size:15px;
+				fill: rgb(30, 30, 30);
+			}
+			
+			#selectedRect { opacity: 0.3; }
+			
+			#PositiveBG { opacity: 0.1; fill: green; }
+			#NegativeBG { opacity: 0.1; fill: red;}
+			
+			.dayText {
+				text-anchor: middle;
+				font-family: helvetica;
+				font-size: 13px;
+				fill: rgb(160, 160, 160);}
+			
+			
+			/*rules for div tooltip*/
+			
+			#dayTooltip {
+				font-weight:bold;
+				fill: rgb(50, 50, 50);}
+			
+			#divTooltip {
+				position: absolute;
+				width: 150px;
+				height: auto;
+				padding: 10px;
+				background-color: rgb(250, 250, 250);
+				-webkit-border-radius:10px;
+				opacity: 0.9;
+				pointer-events: none;
+			}
+			
+			#divTooltip.hidden { display: none;}
+			
+			#divTooltip p {
+				font-family: helvetica;
+				font-size:14px;
+				color: rbg(30, 30, 30);
+				line-height:7px;
+			}
+			
+			
+			/* color palette for food */	
+			
+			.egg { fill: #da9c35;}
+			.fish { fill: #926b36;}
+			.milk { fill: #d4af80;}
+			.tomato { fill: #d34733;}
+			.potato { fill: #dab23f;}
+			.cabbage { fill: #6ddd48;}
+			.broccoli { fill: #7c8160;}
+			.carrot { fill: #ec511b;}
+			.cucumber { fill: #c9de4b;}
+			.cole { fill: #577938;}
+			.onion { fill: #d1d099;}
+			.banana { fill: #d8a838;}
+			.grape { fill: #3c1a45;}
+			.peach { fill: #b73c56;}
+			.rice { fill: #d8b7a5;}
+			.bread { fill: #d29241;}
+			.beef { fill: #7f431c;}
+			.pork { fill: #4b2f1d;}
+			.turkey { fill: #e0af90;}
+			.cookie { fill: #c56937;}
+			
+		</style>
+	</head>
+	<body>
+		<h1>Daily Food Pattern</h1>
+		<p>Click on meals to see the difference! </p>
+		<p>You may also move your mouse over the weekday names to see what happened on that day.</p>
+		<p>
+			<input type="radio" name="scenario" value="L"> Lunch
+			<input type="radio" name="scenario" value="D" checked="true"> Dinner
+		</p>
+		
+		<div id="divTooltip" class="hidden">
+			<p>Ingredient: <span id="FoodName">X</span></p>
+			<p>Quantity: <span id="Value">100</span></p>
+		</div>
+		
+		<script type="text/javascript">
+			
+			//SVG WINDOW  width & height
+			var w = 800
+			var h = 400
+			var pad = 40
+			
+			//Name ARRAYs. For Style and Graph
+			
+			var allFood = []
+				
+			var showFood = [
+				"egg", "fish", "milk",
+				"tomato", "potato", "cabbage", "broccoli", "carrot", "cucumber", "cole", "onion",
+				"banana", "grape", "peach",
+				"rice", "bread",
+				"beef", "pork", "turkey",
+				"cookie"]
+				
+			var eventText = [
+				"a regular day",
+				"for dinner, I quickly ate a hamburger while preparing for the pin-up",
+				"nothing significant",
+				"nothing significant",
+				"nothing significant",
+				"nothing significant",
+				"I didn't have my lunch because of mid-term review",
+				"cooked at home for the dinner",
+				"I tried a different menu for the lunch",
+				"a regular weekend",
+				"a regular first day of a week"
+			]
+			
+			
+			var parseTime = d3.timeParse("%Y/%m/%d");
+			var getDay = d3.timeFormat("%d");
+			var getWeekday = d3.timeFormat("%A");
+			
+			
+		//CSV Data Convert function
+			var Converter = function(d) {
+				return {
+					Food: d.Food,
+					Quantity: parseFloat(d.Quantity),
+					Date: parseTime(d.Time),
+					Meal: d.Meal
+				}
+			}
+			
+		//LOAD DATA
+			d3.csv("data_nutrition.csv", Converter)
+			.then(function(data) {
+				
+				originData = data
+				// console.log(originData)
+
+				//PROCESS function
+				var lunchStack = formatData(data, "L");
+				var dinerStack = formatData(data, "D");
+				// console.table(lunchStack)
+				
+				
+				//GLOBAL SVG window, imported to function
+				svg = d3.select("body")
+							.append("svg")
+							.attr("width", w)
+							.attr("height", h)
+			
+			//Background Rect
+				svg.append("rect")
+				.attr("x", 0)
+				.attr("y", pad)
+				.attr("id", "PositiveBG")
+				.attr("width", w)
+				.attr("height", h/2 - pad)
+				
+				svg.append("rect")
+				.attr("x", 0)
+				.attr("y", h/2)
+				.attr("id", "NegativeBG")
+				.attr("width", w)
+				.attr("height", h/2 - pad)
+				
+			//DRAW Default Stacked Bar Chart
+				drawChart(dinerStack, "D")
+				
+			//DRAW Info Texts
+				drawDate(data);
+				
+			//Input Radio
+				d3.selectAll("input")
+				.on("click", function() {
+					currentStack = formatData(data, this.value);
+					
+		//Question:  I think I should be clearing all the rect after the new input is loaded, I read Chapter12 about selections but I still can't figure this out. I tried adding remove() commands in "drawChart()"function in the beginning, before assigning groups and rects.
+                    //Answer 1a: you can add it here or add it inside the function, but because you have background rects, you will need to distinguish the stacked rect from background, i added a second class called "stacked" to your other rects so we can remove them all. Is this what you mean?
+					d3.selectAll(".stacked").remove()
+					//DRAW BAR CHART in current data
+					drawChart(currentStack, this.value);
+					
+				});
+				
+			});
+			
+			
+//DRAW stacked chart
+			function drawChart(data, a) {
+				
+				// console.log(data)
+				
+				
+				var stk = d3.stack().keys(showFood)
+
+				var stacked = stk(data)
+				
+				// console.log(stacked)
+				
+				
+				//GLOBAL Scale functions
+				xScale = d3.scaleBand()
+					.domain(d3.range(data.length))//data.length = number of days
+					.range([0, w])
+					.paddingInner(0.1);
+				
+				yScale = d3.scaleLinear()
+					.domain([0, 10])
+					.range([0, h - 100]);
+				
+				
+				// console.log(stacked)
+				//stacked: Array with 21(types of food) elements of Array(height arrays)
+				
+				
+			//Array for transformation
+				//Search "RICE"
+				var riceLocation
+				for (var i in stacked) {
+					if (stacked[i].key == "rice") {
+						riceLocation = i
+					}
+				}
+				
+				//Array of Y coordinates
+				var correction = []
+				for (var i=0; i<stacked[riceLocation].length; i++) {
+					correction.push(stacked[riceLocation][i][0])
+				}
+				// console.log(correction)
+				
+				
+			//SET groups, class and FILL
+				var groups = svg.selectAll("g")
+					.exit()
+					.remove()
+					.data(stacked)
+					.enter()
+					.append("g")
+					.attr("class", function(d, i) {
+						return stacked[i].key;//attribute food name as class
+					})
+           
+			//DRAW RECTANGLE
+				groups.selectAll("rect")
+					.data(function(d, i) {
+						return d;
+					})
+                   // .attr("class",function(d){return d.key})
+					.enter()
+					.append("rect")
+                    .attr('class',"stacked") //Answer 1b: adding that stacked class 
+					.attr("x", function(d, i) {
+						return xScale(i);
+					})
+					.attr("height", function(d) {
+						return yScale(d[1]) - yScale(d[0]);
+					})
+					.attr("width", xScale.bandwidth())
+
+					.attr("y", function(d, i) {
+						return yScale(d[0]);
+					})
+					.attr("transform", function(d, i) {
+						return "translate(0, "+ (h / 2 - yScale(correction[i])) + ")"
+					})
+						.on("mouseover", function(d, i) {
+							d3.select(this)
+							.attr("id", "selectedRect")
+							
+                            //Answer 2: select the parent, then get class of parent
+							var food = d3.select(this.parentNode).attr("class")
+							
+							var xCtr = parseFloat(d3.select(this).attr("x")) + xScale.bandwidth() / 2;
+							var yCtr = 120 + parseFloat(d3.select(this).attr("y")) + parseFloat(d3.select(this).attr("height")) / 2 + (h / 2 - yScale(correction[i]))
+							
+							d3.select("#divTooltip")
+							.attr("class", null)
+							.style("left", xCtr + "px")
+							.style("top", yCtr + "px")
+							.select("#FoodName")
+								.text(function(d, i) {
+                                   
+									return food
+								})
+				// Question: I know I should be extracting the name of class in order to
+				// show the name of ingredients, but class is attributed to their parent objects. I really don't know how to get that in this frame.
+			                   
+							var quantity = d[1] - d[0]
+							
+							d3.select("#divTooltip")
+							.select("#Value")
+								.text(Math.round(quantity * 10) / 10)
+							
+						})
+						.on("mouseout", function(d) {
+							d3.select(this)
+							.transition()
+							.duration(200)
+							.attr("opacity", "1")
+							.attr("id", null)
+							
+							d3.select("#divTooltip")
+							.attr("class", "hidden")
+						});
+				
+				svg.append("line")
+					.attr("x1", "0")
+					.attr("y1", h/2)
+					.attr("x2", w)
+					.attr("y2", h/2)
+					.attr("id", "divide")
+					
+			}
+			
+			
+			
+//Date Info and tooltip function
+			function drawDate(data) {
+				
+				var dayDict = {}
+				var dayArray = []
+			
+			//Get Array of date OBJECTS
+				for(var i in data) {
+					if (Object.keys(dayDict).indexOf(getDay(data[i].Date)) == -1) {
+						dayDict[getDay(data[i].Date)] = getWeekday(data[i].Date)
+						dayArray.push(data[i].Date)
+					}
+				}
+				dayArray.pop()
+				// console.log(dayArray);
+				
+				
+				svg.selectAll("text")
+					.data(dayArray)
+					.enter()
+					.append("text")
+					.attr("class", "dayText")
+					.attr("x", function(d, i) {
+						return xScale(i) + xScale.bandwidth() / 2;
+					})
+					.attr("y", function(d) {
+						return h - 20;
+					})
+					.text(function(d, i) {
+						return getWeekday(d);
+					})
+						.on("mouseover", function(d, i) {
+							
+							d3.select(this)
+							.attr("id", "dayTooltip");
+							
+							var getTimeinfo = d3.timeFormat("%Y/%m/%d")
+							
+							var t = getTimeinfo(d)
+							var e = eventText[i]
+							var k = getWeekday(d)
+							
+							//Add pop-up decription
+							svg.append("text")
+							.attr("id","dayPoptext")
+							.attr("x", 0)
+							.attr("y", 30)
+							.text(function(d, i) {
+								return ("On " + t + ", "+ k + ", " + e)
+							})
+						})
+						.on("mouseout", function(d, i) {
+							d3.select(this)
+							.transition("textnormal")
+							.duration(300)
+							.attr("id", null);
+							
+							d3.select("#dayPoptext")
+							.remove()
+						})
+				
+				
+			}
+			
+			
+			
+//DATA PROCESS function
+			function formatData(data, a) {
+				
+			//Get ARRAY of all FOOD Categories
+				for(var k in data) {
+					if (allFood.indexOf(data[k].Food) == -1) {
+						allFood.push(data[k].Food);
+					}
+				}
+				allFood.pop()
+				// console.table(allFood)
+				
+				var Lunch = {}
+				
+			//Create List of Days for sorting
+				for(var i in data) {
+					
+					if(Object.keys(Lunch).indexOf(getDay(data[i].Date))==-1) {
+						Lunch[getDay(data[i].Date)] = {}
+					}
+				}
+				delete Lunch["NaN"]
+				
+				var Diner = {}
+				//Create List of Days for sorting DUPLICATE
+				for(var i in data) {
+					
+					if(Object.keys(Diner).indexOf(getDay(data[i].Date))==-1) {
+						Diner[getDay(data[i].Date)] = {}
+					}
+				}
+				delete Diner["NaN"]
+				
+//Duplicate Problem needs to be solved!!!
+				
+			//Search and assign Quantity DATA
+				for(var j in data) {
+					
+					var date = getDay(data[j].Date);
+					var food = data[j].Food;
+					var quat = data[j].Quantity;
+					var meal = data[j].Meal;
+					
+					if (meal == "L") {
+						Lunch[date][food] = quat
+					} else if (meal == "D" | meal == "S") {
+						Diner[date][food] = quat
+					}
+				}
+				
+				
+				// console.table(Diner)
+				
+			//Assign Empty Data as 0
+				for(var h in Lunch) {
+					for(var g in allFood) {
+						var check = allFood[g]
+						if (Object.keys(Lunch[h]).indexOf(check) == -1) {
+							Lunch[h][check] = 0;
+						}
+					}
+				}
+				for(var h in Diner) {
+					for(var g in allFood) {
+						var check = allFood[g]
+						if (Object.keys(Diner[h]).indexOf(check) == -1) {
+							Diner[h][check] = 0;
+						}
+					}
+				}
+				// console.table(Lunch)
+				// console.table(Diner)
+				
+			//Convert Dictionary to ARRAY
+				var LunchArray = []
+				var DinerArray = []
+				for(var i in Lunch){
+					Lunch[i]["Date"] = i
+					LunchArray.push(Lunch[i])
+				}
+				
+				for(var i in Diner){
+					Diner[i]["Date"] = i
+					DinerArray.push(Diner[i])
+				}
+				
+				// console.table(LunchArray)
+				// console.table(DinerArray)
+				
+				if (a == "L") {
+					return LunchArray;
+				} else if (a == "D") {
+					return DinerArray;
+				}
+			}
+			
+			
+			
+		</script> 
+	</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Display a map</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='../d3.js'></script>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='../d3.js'></script>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js'></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.css' type='text/css' />
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+
+<script>
+//this part of the example can be found at mapbox: https://docs.mapbox.com/mapbox-gl-js/example/simple-map/
+//you will find the accessToken and the style for your map under "Share" in your specific map in mapbox studio
+mapboxgl.accessToken = 'pk.eyJ1IjoianozMDc3IiwiYSI6ImNqdHczOTkwbDBnOHM0Zm82cXo4anplbXYifQ.x1oWtwpzjoGcuqqh7ME79g';
+
+var map = new mapboxgl.Map({
+  container: 'map',//thi sis the div that you have mad above in html that you are now placing your map in
+  style: 'mapbox://styles/jz3077/ck2nj1ztk0vws1cnru1jxiq4h',//you will find the accessToken under "Share" in your specific map in mapbox studio
+  center: [-74, 40.8],//the center of the map can be set to any initial value of [lng,lat]
+  zoom: 15//note that some layers have zoom limits - for example, streets and building footprints are not visible when zoomed out
+});
+
+var fakePlaces = [
+    {lat:43, lng:-74, name:"place1"},
+    {lat:44, lng:-74, name:"place1"},
+    {lat:46, lng:-74, name:"place1"},
+    {lat:48, lng:-74, name:"place1"},
+    {lat:41, lng:-74, name:"place1"}
+]
+
+
+map.on('click',  function (d) {
+    
+        var lon1 = d.lngLat.lng//this is all the click information from the mouse
+        var lat1 = d.lngLat.lat//this is all the click information from the mouse
+        
+    for(var f in fakePlaces){
+        var lat2 = fakePlaces[f].lat
+        var lon2 = fakePlaces[f].lng
+        var distance = havarsine(lat1,lon1,lat2,lon2)
+        console.log(distance)
+    }
+})
+
+function havarsine(lat1,lon1,lat2,lon2){
+    Number.prototype.toRad = function() {
+       return this * Math.PI / 180;
+    }
+
+    var R = 6371; // km 
+    //has a problem with the .toRad() method below.
+    var x1 = lat2-lat1;
+    var dLat = x1.toRad();  
+    var x2 = lon2-lon1;
+    var dLon = x2.toRad();  
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
+                    Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
+                    Math.sin(dLon/2) * Math.sin(dLon/2);  
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c; 
+    
+    return d
+}
+
+
+//built in interactions from mapbox 1 - 7
+//1.bounds
+
+
+//2.zoom
+
+
+//3.geolocation
+
+
+//4.search
+
+
+//5.tilt
+
+
+//6.directions
+
+
+//7.icons
+
+
+//adding buttons to work with mapbox interactions 8 - 11
+
+//8.flyto
+
+
+//9.layers
+
+
+//10.data
+
+
+//11.removing mapbox logo* not recommended in real applications - please adhere to rules when using outside of class
+
+
+
+</script>
+
+</body>
+</html>

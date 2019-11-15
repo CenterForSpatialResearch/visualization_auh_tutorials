@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>thursday</title>
+    <script type="text/javascript" src="../d3.js"></script>
+    <style>
+        #graph {
+            margin: auto;
+            width: 600px;
+            border: 3pm solid black;
+        }
+
+        #tooltip {
+            position: absolute;
+            width: auto;
+            height: auto;
+            padding: 10px;
+            background-color: white;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+        }
+
+        #tooltip.hidden {
+            display: none;
+        }
+
+        #tooltip p {
+            margin: 0;
+            font-family: sans-serif;
+            font-size: 16px;
+            line-height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="graph"></div>
+
+    <div id="tooltip" class="hidden">
+        <p><span id="value">100</span></p>
+    </div>
+
+    <script type="text/javascript">
+
+        var padding = 20
+        var w = 600
+        var h = 1
+        var xRect = 50
+        var yRect = 300 + padding
+
+        // scalable: determine fulcrum height based on width of rect,
+        // = rcos45, where r is radius, w/2
+        // then subtract 1 pixel because it looks better
+        var fulcrumHeight = w / 2 * (Math.cos(Math.PI / 4)) - 1
+        var rectTargetAngle = 0
+        var yClickHereToDropWeight = yRect + h - 5
+
+        //this number is the "choose your billionaire" variable being fed in
+        var billionaireWorth = 70300000000
+        
+        // if time: make a counter so that
+        // as more weight is added, the counter alters the text
+        // e.g. feed nyc SNAP recipients for 1 yr... 2 yrs... 3 yrs... 
+        // counts up as you drop the weights?
+
+        // will be fed in from Sharvari's selection oage
+        var billiName = "MARK ZUCKERBERG"
+
+        //this number is the other variable to compare to, also fed in
+        var compareWorth = 2762628933
+        var compareName = "GDP OF LIBERIA"
+
+        // initialize "bigger" and "smaller variables" as 0 and sides as blank
+        var bigger = 0
+        var smaller = 0
+        var smallSide = "?"
+        var bigSide = "?"
+        var smallLabel = "blank"
+
+        // compare the two values and decide which is bigger, and which side will have multiple icons
+        if (billionaireWorth > compareWorth) {
+            var bigger = billionaireWorth; var smaller = compareWorth;
+            var smallSide = "R"; var bigSide = "L"; var smallLabel = compareName
+        }
+        else { var bigger = compareWorth; var smaller = billionareWorth; var smallSide = "L"; var bigSide = "R"; var smallLabel = billiName }
+        
+        // determine the ratio between the variables
+        compareRatio = Math.ceil(bigger / smaller)
+        //console.log(compareRatio)
+
+        // to make the comparison scalable, create scale with the bigger number as upper limit
+        // scale to jeff bezos' worth?
+        var compareScale = d3.scaleLinear()
+            .domain([0, bigger])
+            .range([0, 45]);
+
+        var iconRadiusScale = d3.scaleLinear()
+            .domain([0, bigger])
+            .range([5, 70]);
+
+
+        var svg = d3.select("#graph").append("svg")
+            .attr("width", 1000)
+            .attr("height", 1000)
+            .attr("yRect", 50);
+
+        // draw the rectangle that turns
+        var g = svg.append("g").attr("id","balanceBar")
+            .attr("transform","translate("+xRect+","+yRect+")")
+            
+            g.append("circle")
+            .attr("cx",w/2)
+            .attr("cy", 0)
+            .attr("r",w/2)
+            .attr("opacity",.1)
+            
+            g.append('rect')
+            .attr('x', 0)
+            .attr('y',0)
+            .attr('width', w)
+            .attr('height', h)
+            .attr('fill', "white")
+            .attr("stroke-width", 2)
+            .attr('stroke', "black");
+            
+        var stemHeight = 50
+        var containerWidth = 100
+
+        // draw container stems
+        var leftStem = svg.append("line")
+            .attr("x1", xRect)
+            .attr("y1", yRect - stemHeight)
+            .attr("x2", xRect)
+            .attr("y2", yRect)
+            .attr("stroke-width", 2)
+            .attr("stroke", "black");
+
+
+        var rightStem = svg.append("line")
+            .attr("x1", xRect + w)
+            .attr("y1", yRect - stemHeight)
+            .attr("x2", xRect + w)
+            .attr("y2", yRect)
+            .attr("stroke-width", 2)
+            .attr("stroke", "black")
+            .attr("id","stemR");  
+
+
+        var leftContainer = svg.append("line")
+            .attr("x1", xRect - containerWidth/2)
+            .attr("y1", yRect - stemHeight)
+            .attr("x2", xRect + containerWidth/2)
+            .attr("y2", yRect - stemHeight)
+            .attr("stroke-width", 8)
+            .attr("stroke", "black");
+        
+        var rightContainer = svg.append("line")
+            .attr("x1", xRect + w - containerWidth/2)
+            .attr("y1", yRect - stemHeight)
+            .attr("x2", xRect + w + containerWidth/2)
+            .attr("y2", yRect - stemHeight)
+            .attr("stroke-width", 8)
+            .attr("stroke", "black");
+
+// My first attempts copy & pasting code from online about how to animate along path
+// ... they didnt work
+
+//             var lineData = [ { "x": 1,   "y": 5},  { "x": 20,  "y": 20},
+//                   { "x": 40,  "y": 10}, { "x": 60,  "y": 40},
+//                   { "x": 80,  "y": 5},  { "x": 100, "y": 60}];
+ 
+//  //This is the accessor function we talked about above
+//             var lineFunction = d3.svg.line()
+//                           .x(function(d) { return d.x; })
+//                           .y(function(d) { return d.y; })
+//                          .interpolate("linear");
+
+
+// //The line SVG Path we draw
+//             var lineGraph = svg.append("path")
+//                             .attr("d", lineFunction(lineData))
+//                             .attr("stroke", "blue")
+//                             .attr("stroke-width", 2)
+//                            .attr("fill", "none");
+        
+
+
+
+
+        // this text will be put on top of container elements of scale
+        // and in the same code animating along circular path
+        // so that it looks like each customized variable name 
+        // is engraved onto the container
+
+        // svg.append("text")
+        //     .text(billiName)
+        //     .attr("font-family", "Open Sans Condensed")
+        //     .attr("x", xRect + 5)
+        //     .attr("y", yClickHereToDropWeight)
+
+
+        // svg.append("text")
+        //     .text(compareName)
+        //     .attr("font-family", "Open Sans Condensed")
+        //     // how to always right align this text to scale border,
+        //     // regardless of length of text from variable name?
+        //     .attr("x", xRect + w - 85)
+        //     .attr("y", yClickHereToDropWeight)
+
+
+        // draw center of scale
+        var center = svg.append('circle')
+            .attr("cx", w / 2 + xRect)
+            .attr("cy", yRect + h / 2)
+            .attr("fill", "black")
+            .attr("r", 10)
+            .on("mouseover", function () {
+                d3.select(this).attr("fill", "red")
+            })
+            .on("mouseout", function () {
+                d3.select(this).attr("fill", "black");
+            })
+            //When clicked, should select off-screen circles and
+            // eventially make them fall onto the scale
+
+            .on("click", function () {
+                console.log(compareRatio)
+            for (i = 0; i < compareRatio; i +=1) {
+            makeIcons(smaller, smallSide, smallLabel, i);
+            
+           
+            turnRect(compareScale(smaller), smallSide)
+            turnRect(compareScale(bigger), bigSide)
+
+            }
+                // uh oh this also selects itself which we don't want
+                // but that might be irrelevant once scale is an svg?
+                //d3.selectAll('circle')
+                    // transform them down by yRect - the center of each circle
+                 //   .transition()
+                 //   .duration(1000)
+                //    .attr("transform", "translate (0," + (yRect + iconRadiusScale(bigger) + ")"));
+            })
+            ;
+            
+      var drawArc = d3.arc()
+            .innerRadius(function(d, i) {
+             return w/2
+            })
+            .outerRadius(function(d, i) {
+             return w/2+2
+            })
+            .startAngle(0)
+            .endAngle(function(d, i) {
+              return 360
+            });
+            
+            var path = svg.append("path")
+			.style("fill", "black")
+            .attr("d", drawArc)
+            .attr("transform","translate("+(xRect+w/2)+","+yRect+")");      // draw the arc
+            
+            function pathTween(path){
+                console.log("tween")
+            			var length = path.node().getTotalLength(); // Get the length of the path
+                        console.log(length)
+            			var r = d3.interpolate(0, 1000); //Set up interpolation from 0 to the path length
+            			
+                        
+                        return function(t){
+            				var point = path.node().getPointAtLength(r(t)); // Get the next point along the path
+            				d3.select(this) // Select the circle
+            					.attr("x", point.x) // Set the cx
+            					.attr("y", point.y) // Set the cy
+            			}
+            }
+            
+         d3.select("#stemR")
+            .transition()
+			.duration(1000)
+			.tween("pathTween", function(){return pathTween(path)})
+            
+        // draw the fulcrum = vertical center line
+        var fulcrum = svg.append("line")
+            .attr("x1", 50 + w / 2)
+            .attr("y1", yRect + h)
+            .attr("x2", 50 + w / 2)
+            .attr("y2", yRect + h + fulcrumHeight)
+            .attr("stroke-width", 2)
+            .attr("stroke", "black");
+
+        //draw the "floor" line
+        var floor = svg.append("line")
+            .attr("x1", 50)
+            .attr("y1", yRect + h + fulcrumHeight)
+            .attr("x2", 50 + w)
+            .attr("y2", yRect + h + fulcrumHeight)
+            .attr("stroke-width", 2)
+            .attr("stroke", "black");
+
+
+
+        // call the makeIcons function for billionaire
+        // specify sides "L" and "R" so billionaire is always on left side,
+        // and comparison variable always on right.
+        makeIcons(billionaireWorth, "L", billiName, 0)
+
+        // define function to make icons
+        function makeIcons(weight, side, label, i) {
+            svg.append('circle')
+                .attr("cx", function () {
+                    // put billionaire icon on left side of screen
+                    if (side == "L") {
+                        return xRect + 5 * padding + iconRadiusScale(weight) / 2
+                    }
+                    // put comparison icon on right side of screen
+                    else { return xRect + w - 5 * padding - iconRadiusScale(weight) / 2+i%5*2*(iconRadiusScale(weight))}
+                })
+                // if u want them off screen:
+                // .attr("cy", - iconRadiusScale(bigger))
+                .attr("cy", Math.floor(i/5) *2*(iconRadiusScale(weight)))
+                .attr("fill", "gold")
+                .attr("r", iconRadiusScale(weight))
+
+                // TO DO: update tooltip position so that it moves with the 
+                // falling or rising icon
+
+                // .on("mouseover", function (d, i) {
+                //     d3.select(this).attr("fill", "red")
+                //     var xPosition = parseFloat(d3.select(this).attr("cx")) + 10
+                //     var yPosition = parseFloat(d3.select(this).attr("cy")) + 10
+                //     console.log(xPosition, yPosition, d3.select(this))
+
+                //     d3.select("#tooltip")
+                //         .style("left", xPosition + "px")
+                //         .style("top", yPosition + "px")
+                //         .select("#value")
+                //         .text(label + ": $" + weight);
+                //     d3.select("#tooltip").classed("hidden", false);
+                // })
+                // .on("mouseout", function (d, i) {
+                //     d3.select(this).attr("fill", "gold");
+                //     d3.select("#tooltip").classed("hidden", true);
+                // })
+                // .on("click", function () {
+                //     d3.select(this)
+                //         .transition()
+                //         .duration(2000)
+                //         // drop ball down to position of rect
+                //         // need a way to keep the ball moving with the rect
+                //         .attr("transform", "translate (0," + (yRect - (2 * iconRadiusScale(bigger))) + ")");
+                //     turnRect(compareScale(weight), side);
+                // });
+
+        };
+
+        function turnRect(angle, side) {
+            if (side == "L") {
+                rectTargetAngle = rectTargetAngle - angle
+            }
+            else {
+                rectTargetAngle = rectTargetAngle + angle
+            }
+            // new local variable (not used outside function)
+            let rectDisplayAngle = rectTargetAngle;
+            // make max rotation of 45 degrees, so it doesnt go through the "floor"
+            if (rectDisplayAngle > 45) rectDisplayAngle = 45
+            if (rectDisplayAngle < -45) rectDisplayAngle = -45
+            
+            
+                
+            d3.select('#balanceBar')
+                .transition()
+                // delay programatically to start turning when ball hits?
+                // make delay variable of time it would take for ball to translate down?
+                .delay(500)
+                .duration(5000)
+                .attr("transform", "rotate(" + (rectDisplayAngle) + " 300 160)")
+                
+                
+                         
+                d3.select(".stemR")  
+                .transition().delay(500)
+                .duration(5000)      
+                .attr("transform", "rotate(" + (rectDisplayAngle) + "," + (w / 2 + xRect) + "," + (yRect + h / 2) + ")")
+                
+                return rectTargetAngle
+        }
+
+
+    </script>
+</body>
+
+</html>

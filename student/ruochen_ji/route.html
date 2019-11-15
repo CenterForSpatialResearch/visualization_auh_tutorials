@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Daily Meal Pattern | R.Ji</title>
+		<script type="text/javascript" src="../../d3.js"></script>
+		<style type="text/css">
+	
+			
+		</style>
+	</head>
+	<body>
+<script>
+		//LOAD DATA
+			d3.csv("route_data.csv")
+			.then(function(data) {
+                var parsedData = parseRoute(data)
+                console.log(parsedData)
+            })
+			
+            
+            function parseRoute(data){
+                
+                var formatted = []
+                
+                for(var i in data){
+                    var year = data[i].year
+                    formatted[i]=[]//each line is an array
+                    if(data[i].route!=undefined){
+                        var route = data[i].route.split("),").join(")").split(")")
+                        var parsedRoute = []
+                        for(var r in route){
+                            var entry = route[r]
+                            var station = entry.split("(")[0]
+                            var stationRecord = entry.split("(")[1]
+                            if(stationRecord!=undefined){
+                                var sRList = stationRecord.split(",")
+                                if(sRList.length==2){
+                                    var date = sRList[0]
+                                    var elevation = sRList[1]
+                                }else{
+                                    
+                                    //when there is a missing value, then "NA" is substituted
+                                    //you will have to decide how to draw
+                                    if(stationRecord.includes("/")){
+                                        var date = stationRecord
+                                        var elevation = "NA"
+                                    }else{
+                                        var elevation = stationRecord
+                                        var date = "NA"
+                                
+                                    }
+                                }
+                                //you may need to put this in different formats
+                                formatted[i].push([station, date, elevation,year])
+                            }
+                        }
+                        
+                    }
+                }
+            
+                return formatted
+            }
+		</script> 
+	</body>
+</html>
